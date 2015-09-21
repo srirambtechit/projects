@@ -18,6 +18,14 @@ public class Cell {
 	this.y = y;
     }
 
+    public boolean isLastCell() {
+	return x + 1 == panel.getRow() && y + 1 == panel.getCol();
+    }
+
+    public boolean hasZero() {
+	return value == Element.ZERO;
+    }
+
     public List<Cell> getNeighbourElements() {
 	int row = panel.getRow();
 	int col = panel.getCol();

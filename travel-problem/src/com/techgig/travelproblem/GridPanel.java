@@ -2,6 +2,8 @@ package com.techgig.travelproblem;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -68,10 +70,35 @@ public class GridPanel {
 	Map<Cell, List<Cell>> map = new HashMap<>();
 
 	// Assumes that, elements starts at top left corner of the GridPanel
-	Cell cell = cells[0][0];
-	map.put(cell, cell.getNeighbourElements());
+	Cell currentCell = cells[0][0];
+	map.put(currentCell, currentCell.getNeighbourElements());
 	while (!map.isEmpty()) {
-	    
+	    List<Cell> neighbours = map.get(currentCell);
+	    Cell neighbour = neighbours.remove(0);
+
+	    // dead end found, no more move, resetting currentCell
+	    if (neighbour.hasZero()) {
+		map.remove(currentCell);
+	    }
+
+	    // removing ZEROs from neighbours list
+	    Iterator<Cell> iterator = neighbours.iterator();
+	    while (iterator.hasNext()) {
+		Cell cell = iterator.next();
+		if (cell.hasZero()) {
+		    iterator.remove();
+		}
+	    }
+
+	    if (neighbours.isEmpty()) {
+		map.remove(currentCell);
+	    }
+
+	    map.put(neighbour, neighbour.getNeighbourElements());
+	    currentCell = neighbour;
+	    if (currentCell.isLastCell()) {
+		break;
+	    }
 	}
 	return totalPaths;
     }
