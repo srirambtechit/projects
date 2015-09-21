@@ -12,10 +12,10 @@ public enum Element {
     SEVEN(7, new Direction[] { Direction.RIGHT, Direction.LOWER, Direction.DIAGONAL });
     //@formatter:on
 
-    int value;
+    public int value;
     public Direction[] movements;
 
-    Element(int value, Direction[] movements) {
+    private Element(int value, Direction[] movements) {
 	this.value = value;
 	this.movements = movements;
     }

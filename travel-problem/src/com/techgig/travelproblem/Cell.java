@@ -5,9 +5,9 @@ import java.util.List;
 
 public class Cell {
 
-    public Element value;
-    public int x;
-    public int y;
+    private Element value;
+    private int x;
+    private int y;
     private GridPanel panel;
 
     public Cell(GridPanel panel, Element value, int x, int y) {

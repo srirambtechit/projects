@@ -1,5 +1,10 @@
 package com.techgig.travelproblem;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class GridPanel {
     private int row;
     private int col;
@@ -57,8 +62,18 @@ public class GridPanel {
     }
 
     public int findTotalPaths() {
-	// TODO Auto-generated method stub
-	return 0;
+	int totalPaths = 0;
+
+	// Map object to hold current cell as key and neighbour cells as value
+	Map<Cell, List<Cell>> map = new HashMap<>();
+
+	// Assumes that, elements starts at top left corner of the GridPanel
+	Cell cell = cells[0][0];
+	map.put(cell, cell.getNeighbourElements());
+	while (!map.isEmpty()) {
+	    
+	}
+	return totalPaths;
     }
 
     public String toString() {
