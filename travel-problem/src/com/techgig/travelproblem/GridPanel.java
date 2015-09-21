@@ -1,11 +1,10 @@
 package com.techgig.travelproblem;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 
 public class GridPanel {
     private int row;
@@ -67,6 +66,44 @@ public class GridPanel {
 	int totalPaths = 0;
 
 	// Map object to hold current cell as key and neighbour cells as value
+	Stack<Move> stack = new Stack<>();
+
+	// Assumes that, elements starts at top left corner of the GridPanel
+	Move move = new Move();
+	move.currentCell = cells[0][0];
+	move.neighbours = move.currentCell.getNeighbourElements();
+	stack.push(move);
+
+	while (!stack.isEmpty()) {
+	    Move currentMove = stack.pop();
+	    Cell currentCell = currentMove.currentCell;
+	    List<Cell> neighbours = currentMove.neighbours;
+	    Cell neighbour = neighbours.remove(0);
+
+	    // dead end found, no more move, resetting currentCell
+	    if (neighbour.hasZero()) {
+	    }
+
+	    // removing ZEROs from neighbours list
+	    Iterator<Cell> iterator = neighbours.iterator();
+	    while (iterator.hasNext()) {
+		Cell cell = iterator.next();
+		if (cell.hasZero()) {
+		    iterator.remove();
+		}
+	    }
+
+	    if (currentCell.isLastCell()) {
+		break;
+	    }
+	}
+	return totalPaths;
+    }
+
+    public int findTotalPaths0() {
+	int totalPaths = 0;
+
+	// Map object to hold current cell as key and neighbour cells as value
 	Map<Cell, List<Cell>> map = new HashMap<>();
 
 	// Assumes that, elements starts at top left corner of the GridPanel
@@ -112,6 +149,11 @@ public class GridPanel {
 	    buf.append("\n");
 	}
 	return buf.toString();
+    }
+
+    private class Move {
+	Cell currentCell;
+	List<Cell> neighbours;
     }
 
 }
