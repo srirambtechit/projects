@@ -1,6 +1,6 @@
 package com.techgig.travelproblem;
 
-public enum GridValue {
+public enum Element {
     //@formatter:off
     ZERO(0, new Direction[] { Direction.NO_MOVE }), 
     ONE(1, new Direction[] { Direction.RIGHT }), 
@@ -15,12 +15,12 @@ public enum GridValue {
     int value;
     public Direction[] movements;
 
-    GridValue(int value, Direction[] movements) {
+    Element(int value, Direction[] movements) {
 	this.value = value;
 	this.movements = movements;
     }
 
-    public static GridValue getEnum(int value) {
+    public static Element getElementByValue(int value) {
 	//@formatter:off
 	switch (value) {
     	case 1: return ONE;

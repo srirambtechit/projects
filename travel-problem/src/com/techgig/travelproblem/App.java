@@ -1,6 +1,6 @@
 package com.techgig.travelproblem;
 
-public class Test {
+public class App {
 
     public static void main(String[] args) {
 	int[] dim = { 4, 6 };
@@ -8,8 +8,14 @@ public class Test {
 
 	GridPanel panel = new GridPanel(dim, gridValues);
 	System.out.println(panel);
-	int paths = panel.findNumberOfPaths();
+	int paths = panel.findTotalPaths();
 	System.out.println("Total no.of paths : " + paths);
+
+	for (int x = 0; x < panel.getRow(); x++) {
+	    for (int y = 0; y < panel.getCol(); y++) {
+		System.out.printf("%s : %s%n", panel.getCell(x, y), panel.getCell(x, y).getNeighbourElements());
+	    }
+	}
     }
 
 }
