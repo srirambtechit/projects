@@ -161,9 +161,7 @@ public class GridPanel {
 	    while (itr.hasNext()) {
 		Cell cell = itr.next();
 		itr.remove();
-		if (!cell.hasZero()) {
-		    findPaths(cell);
-		}
+		findPaths(cell);
 	    }
 	} else {
 	    findPaths(neighbours.get(0));
