@@ -56,7 +56,7 @@ public class Cell {
     }
 
     public String toString() {
-	return String.format("{%s %d, %d}", value.toString(), x, y);
+	return value.toString();
     }
 
 }

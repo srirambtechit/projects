@@ -35,7 +35,7 @@ public enum Element {
     }
     
     public String toString() {
-	return String.format("[%d]", value);
+	return String.format(" %d ", value);
     }
 
 }
