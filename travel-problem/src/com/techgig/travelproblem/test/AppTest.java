@@ -48,7 +48,7 @@ public class AppTest {
 	int[] gridValues = {};
 	GridPanel panel = new GridPanel(dim, gridValues);
 	int paths = panel.findPaths();
-	assertEquals("TestCase - 4", 3, paths);
+	assertEquals("TestCase - 5", 3, paths);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -57,7 +57,7 @@ public class AppTest {
 	int[] gridValues = {};
 	GridPanel panel = new GridPanel(dim, gridValues);
 	int paths = panel.findPaths();
-	assertEquals("TestCase - 4", 3, paths);
+	assertEquals("TestCase - 6", 3, paths);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -66,7 +66,7 @@ public class AppTest {
 	int[] gridValues = { 9, 2, 0, 1 };
 	GridPanel panel = new GridPanel(dim, gridValues);
 	int paths = panel.findPaths();
-	assertEquals("TestCase - 4", 3, paths);
+	assertEquals("TestCase - 7", 3, paths);
     }
 
 }
