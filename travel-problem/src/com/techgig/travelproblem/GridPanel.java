@@ -140,7 +140,7 @@ public class GridPanel {
 	return totalPaths;
     }
 
-    private int paths;
+    private int paths = 0;
 
     public int findPaths() {
 	findPaths(cells[0][0]);
@@ -150,6 +150,9 @@ public class GridPanel {
     private void findPaths(Cell currentCell) {
 	if (currentCell.isLastCell()) {
 	    paths++;
+	    return;
+	}
+	if (currentCell.hasZero()) {
 	    return;
 	}
 	List<Cell> neighbours = currentCell.getNeighbourElements();

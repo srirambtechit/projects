@@ -16,6 +16,8 @@ public class App {
 		System.out.printf("%s : %s%n", panel.getCell(x, y), panel.getCell(x, y).getNeighbourElements());
 	    }
 	}
+
+	System.out.println("paths : " + panel.findPaths());
     }
 
 }

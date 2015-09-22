@@ -19,7 +19,7 @@ public class Cell {
     }
 
     public boolean isLastCell() {
-	return x + 1 == panel.getRow() && y + 1 == panel.getCol();
+	return (x + 1) == panel.getRow() && (y + 1) == panel.getCol();
     }
 
     public boolean hasZero() {
@@ -56,7 +56,7 @@ public class Cell {
     }
 
     public String toString() {
-	return value.toString();
+	return String.format("{%s %d, %d}", value.toString(), x, y);
     }
 
 }
