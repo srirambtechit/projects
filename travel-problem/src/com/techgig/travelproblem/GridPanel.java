@@ -1,10 +1,7 @@
 package com.techgig.travelproblem;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Stack;
 
 public class GridPanel {
     private int row;
@@ -99,11 +96,6 @@ public class GridPanel {
 	    buf.append("\n");
 	}
 	return buf.toString();
-    }
-
-    private class Move {
-	Cell currentCell;
-	List<Cell> neighbours;
     }
 
 }

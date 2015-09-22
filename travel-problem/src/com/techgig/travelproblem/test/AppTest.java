@@ -69,4 +69,31 @@ public class AppTest {
 	assertEquals("TestCase - 7", 3, paths);
     }
 
+    @Test
+    public void testCaseEight() {
+	int[] dim = { 4, 6 };
+	int[] gridValues = { 1, 3, 0, 0, 0, 0, 0, 0, 4, 5, 1, 0, 0, 0, 0, 6, 0, 6, 0, 0, 0, 0, 5, 0 };
+	GridPanel panel = new GridPanel(dim, gridValues);
+	int paths = panel.findPaths();
+	assertEquals("TestCase - 8", 0, paths);
+    }
+
+    @Test
+    public void testCaseNine() {
+	int[] dim = { 5, 5 };
+	int[] gridValues = { 3, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 3, 5, 2, 0, 0, 0, 3, 7, 0, 0, 0, 0, 1, 0 };
+	GridPanel panel = new GridPanel(dim, gridValues);
+	int paths = panel.findPaths();
+	assertEquals("TestCase - 9", 5, paths);
+    }
+
+    @Test
+    public void testCaseTen() {
+	int[] dim = { 3, 3 };
+	int[] gridValues = { 7, 7, 7, 7, 7, 7, 7, 7, 0 };
+	GridPanel panel = new GridPanel(dim, gridValues);
+	int paths = panel.findPaths();
+	assertEquals("TestCase - 10", 13, paths);
+    }
+
 }

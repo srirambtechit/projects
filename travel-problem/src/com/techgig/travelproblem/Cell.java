@@ -6,8 +6,8 @@ import java.util.List;
 public class Cell {
 
     private Element value;
-    private int x;
-    private int y;
+    public int x;
+    public int y;
     private GridPanel panel;
 
     public Cell(GridPanel panel, Element value, int x, int y) {
