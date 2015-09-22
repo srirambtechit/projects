@@ -140,6 +140,33 @@ public class GridPanel {
 	return totalPaths;
     }
 
+    private int paths;
+
+    public int findPaths() {
+	findPaths(cells[0][0]);
+	return paths;
+    }
+
+    private void findPaths(Cell currentCell) {
+	if (currentCell.isLastCell()) {
+	    paths++;
+	    return;
+	}
+	List<Cell> neighbours = currentCell.getNeighbourElements();
+	if (neighbours.size() > 1) {
+	    Iterator<Cell> itr = neighbours.iterator();
+	    while (itr.hasNext()) {
+		Cell cell = itr.next();
+		itr.remove();
+		if (!cell.hasZero()) {
+		    findPaths(cell);
+		}
+	    }
+	} else {
+	    findPaths(neighbours.get(0));
+	}
+    }
+
     public String toString() {
 	StringBuffer buf = new StringBuffer();
 	for (int i = 0; i < row; i++) {
