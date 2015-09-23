@@ -6,7 +6,7 @@ import org.junit.Test;
 
 import com.techgig.travelproblem.GridPanel;
 
-public class AppTest {
+public class AppSolutionOneTest {
 
     int[] dim = { 4, 6 };
 

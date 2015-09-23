@@ -2,6 +2,7 @@ package com.techgig.travelproblem;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Stack;
 
 public class GridPanel {
     private int row;
@@ -61,6 +62,11 @@ public class GridPanel {
 
     private int paths = 0;
 
+    /**
+     * solution one: recursive with common variable
+     * 
+     * @return
+     */
     public int findPaths() {
 	findPaths(cells[0][0]);
 	return paths;
@@ -85,6 +91,42 @@ public class GridPanel {
 	} else {
 	    findPaths(neighbours.get(0));
 	}
+    }
+
+    /**
+     * solution two: without recursion
+     * 
+     * @return
+     */
+    public int findPathCount() {
+	int paths = 0;
+
+	Cell currentCell = cells[0][0];
+	Stack<Cell> s = new Stack<>();
+	s.add(currentCell);
+
+	while (!s.isEmpty()) {
+	    currentCell = s.pop();
+	    if (currentCell.isLastCell()) {
+		paths++;
+	    }
+	    if (currentCell.hasZero()) {
+		continue;
+	    }
+	    List<Cell> neighbours = currentCell.getNeighbourElements();
+	    if (neighbours.size() > 1) {
+		Iterator<Cell> itr = neighbours.iterator();
+		while (itr.hasNext()) {
+		    Cell cell = itr.next();
+		    itr.remove();
+		    s.add(cell);
+		}
+	    } else {
+		s.add(neighbours.get(0));
+	    }
+	}
+
+	return paths;
     }
 
     public String toString() {

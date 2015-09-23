@@ -7,8 +7,11 @@ public class App {
 	int[] gridValues = { 7, 7, 7, 7, 7, 7, 7, 7, 0 };
 	GridPanel panel = new GridPanel(dim, gridValues);
 	System.out.println(panel);
-	int paths = panel.findPaths();
 
+	int paths = panel.findPathCount();
+	System.out.println("paths : " + paths);
+	
+	paths = panel.findPaths();
 	System.out.println("paths : " + paths);
     }
 
