@@ -1,7 +1,5 @@
 package com.techgig.commzoneproblem;
 
-import java.util.Arrays;
-
 public class CommunicationEstablisher {
 
     private State state;
@@ -36,12 +34,10 @@ public class CommunicationEstablisher {
 	    data = new int[rows.length][];
 	    for (String strRow : rows) {
 		String[] columns = strRow.split("@");
-		System.out.println("Col : " + Arrays.toString(columns));
 		if (columns != null) {
 		    data[rowCount] = new int[columns.length];
 		    int columnIndex = 0;
 		    for (String strColumn : columns) {
-			System.out.println("str : " + strColumn);
 			data[rowCount][columnIndex++] = Integer.valueOf(strColumn);
 			dataCount++;
 		    }

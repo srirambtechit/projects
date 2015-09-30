@@ -1,6 +1,5 @@
 package com.techgig.commzoneproblem;
 
-
 public class State {
 
     private City[][] cities;
@@ -23,10 +22,17 @@ public class State {
 	int id = 0;
 	for (int i = 0; i < rows; i++) {
 	    for (int j = 0; j < columns; j++) {
-		cities[i][j] = new City(i, j, data[i][j]);
+		cities[i][j] = new City(this, i, j, data[i][j]);
 		cities[i][j].setId(++id);
+		cities[i][j].setPlacement(Placement.getPlacement(i, j, rows, columns));
+		System.out.println(cities[i][j]);
 	    }
 	}
+	cities[0][0].getNeighbours();
+    }
+
+    public City[][] getCities() {
+	return cities;
     }
 
     public int establishCommunicationZone() {

@@ -33,11 +33,21 @@ public enum Placement {
 	this.directions = directions;
     }
 
+    /**
+     * <pre>
+     * 
+     * </pre>
+     * 
+     * @param x
+     * @param y
+     * @param xLimit
+     * @param yLimit
+     * @return
+     */
     public static Placement getPlacement(int x, int y, int xLimit, int yLimit) {
-
 	xLimit--;
 	yLimit--;
-
+	// Corner cell
 	if (x == 0 && y == 0) {
 	    return TOP_LEFT_CORNER;
 	} else if (x == 0 && y == yLimit) {
@@ -47,7 +57,21 @@ public enum Placement {
 	} else if (x == xLimit && y == yLimit) {
 	    return BOTTOM_RIGHT_CORNER;
 	}
-	return null;
+	// Middle cell
+	else if (x > 0 && x < xLimit) {
+	    if (y == 0) {
+		return MID_LEFT_CORNER;
+	    } else if (y == yLimit) {
+		return MID_RIGHT_CORNER;
+	    }
+	} else if (y > 0 && y < yLimit) {
+	    if (x == 0) {
+		return TOP_MID_CORNER;
+	    } else if (x == xLimit) {
+		return BOTTOM_MID_CORNER;
+	    }
+	}
+	return CENTER;
     }
 
 }
