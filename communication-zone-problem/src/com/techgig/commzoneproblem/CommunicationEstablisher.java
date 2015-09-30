@@ -12,6 +12,10 @@ public class CommunicationEstablisher {
 
     private int establishmentCost;
 
+    public State getState() {
+	return state;
+    }
+
     public CommunicationEstablisher(String inputStr) {
 	parseInputAndInitData(inputStr);
 	processData();

@@ -34,27 +34,7 @@ public class City {
     }
 
     public List<City> getNeighbours() {
-	switch (placement) {
-	case TOP_LEFT_CORNER:
-	    return getNeighbours(placement.getDirections());
-	case BOTTOM_LEFT_CORNER:
-	    break;
-	case BOTTOM_MID_CORNER:
-	    break;
-	case BOTTOM_RIGHT_CORNER:
-	    break;
-	case CENTER:
-	    break;
-	case MID_LEFT_CORNER:
-	    break;
-	case MID_RIGHT_CORNER:
-	    break;
-	case TOP_MID_CORNER:
-	    break;
-	case TOP_RIGHT_CORNER:
-	    break;
-	}
-	return null;
+	return getNeighbours(placement.getDirections());
     }
 
     private List<City> getNeighbours(List<Direction> directions) {
@@ -63,7 +43,16 @@ public class City {
 	    int x = latitude;
 	    int y = longitude;
 	    switch (direction) {
+	    case UP:
+		x--;
+		break;
 	    case DOWN:
+		x++;
+		break;
+	    case LEFT:
+		y--;
+		break;
+	    case RIGHT:
 		y++;
 		break;
 	    case DOWN_LEFT_DIAGONAL:
@@ -73,15 +62,6 @@ public class City {
 	    case DOWN_RIGHT_DIAGONAL:
 		x++;
 		y++;
-		break;
-	    case LEFT:
-		y--;
-		break;
-	    case RIGHT:
-		y++;
-		break;
-	    case UP:
-		x--;
 		break;
 	    case UP_LEFT_DIAGONAL:
 		x--;

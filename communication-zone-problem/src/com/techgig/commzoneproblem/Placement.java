@@ -34,10 +34,6 @@ public enum Placement {
     }
 
     /**
-     * <pre>
-     * 
-     * </pre>
-     * 
      * @param x
      * @param y
      * @param xLimit
