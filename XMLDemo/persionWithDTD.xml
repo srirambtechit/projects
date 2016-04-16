@@ -1,0 +1,14 @@
+<?xml version="1.0" standalone="yes"?>
+<!DOCTYPE locations [
+<!ELEMENT locations (place)*>
+<!ELEMENT place (name | directions)*>
+<!ELEMENT name (#PCDATA)>
+<!ELEMENT directions (#PCDATA)>
+]>
+
+<locations>
+	<place>
+		<name>oldName</name>
+		<directions>oldDirection</directions>
+	</place>
+</locations>
