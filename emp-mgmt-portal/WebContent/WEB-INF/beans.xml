@@ -6,7 +6,11 @@
 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
 http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd">
 
-	<bean id="employeeManager" class="com.msrm.empmgmtportal.module.biz.EmployeeManager" />
-	<bean id="employeeDAO" class="com.msrm.empmgmtportal.module.dal.dao.impl.EmployeeDAOImpl" />
+	<bean id="employeeManager" class="com.msrm.empmgmtportal.module.biz.EmployeeManager">
+		<property name="employeeDAO" ref="employeeDAO" />
+	</bean>
+	
+	<bean id="employeeDAO"
+		class="com.msrm.empmgmtportal.module.dal.dao.impl.EmployeeDAOImpl" />
 
 </beans>

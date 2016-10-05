@@ -12,6 +12,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<mvc:annotation-driven />
 
+	<import resource="beans.xml" />
+
 	<bean id="viewResolver"
 		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
 		<property name="prefix" value="/WEB-INF/view/" />
