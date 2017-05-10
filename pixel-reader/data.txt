@@ -1,0 +1,5 @@
+Name=Sriram
+Age=28
+E-Mail=sriram@gmail.com
+Mobile=+91-98961 42123
+City=Madurai
