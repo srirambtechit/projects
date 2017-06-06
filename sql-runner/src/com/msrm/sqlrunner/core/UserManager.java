@@ -27,7 +27,7 @@ public class UserManager {
 			if (userExists(user.getUsername())) {
 				return false;
 			}
-			lines.add(user.getUsername() + ":" + user.getPassword());
+			lines.add(user.getUsername() + ":" + user.getPassword() + ":" + user.getRole());
 			Files.write(Paths.get(userFile), lines, StandardCharsets.UTF_8, StandardOpenOption.APPEND);
 		} catch (IOException e) {
 			ExceptionUtil.raiseApplicationException(e, logger);
@@ -48,7 +48,7 @@ public class UserManager {
 			int index = 0;
 			for (; index < lines.size(); index++) {
 				if (lines.get(index).contains(user.getUsername())) {
-					lines.set(index, user.getUsername() + ":" + user.getPassword());
+					lines.set(index, user.getUsername() + ":" + user.getPassword() + ":" + user.getRole());
 					break;
 				}
 			}

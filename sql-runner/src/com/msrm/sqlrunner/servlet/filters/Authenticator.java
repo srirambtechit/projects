@@ -31,20 +31,28 @@ public class Authenticator implements Filter {
 
 		String uri = httpRequest.getRequestURI();
 		logger.info("Requested Resource::" + uri);
-		System.out.println("URI : " + uri);
+		System.out.println("URL : " + uri + "?" + httpRequest.getQueryString());
 
 		String contextRoot = httpRequest.getServletContext().getServletContextName();
 		uri = uri.substring(contextRoot.length() + 2);
 		System.out.println("URI : " + uri);
 
 		HttpSession session = httpRequest.getSession(false);
-
+		System.out.println("session: " + session);
 		if (session == null || session.getAttribute("user") == null) {
 			logger.error("Unauthorized access request");
-			httpRequest.getRequestDispatcher("uiFlow?page=login").include(httpRequest, httpResponse);
+			httpRequest.getRequestDispatcher("uiFlow?page=login").forward(httpRequest, httpResponse);
 		} else {
 			// pass the request along the filter chain
-			chain.doFilter(httpRequest, response);
+			String path = "";
+			if (uri.equals("data")) {
+				path = "bizFlow?" + httpRequest.getQueryString();
+			} else if (uri.equals("ui")) {
+				path = "uiFlow?" + httpRequest.getQueryString();
+			}
+			System.out.println("Initiated flow is " + path);
+			httpRequest.getRequestDispatcher(path).forward(httpRequest, httpResponse);
+//			chain.doFilter(httpRequest, response);
 		}
 
 	}

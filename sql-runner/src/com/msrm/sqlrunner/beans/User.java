@@ -8,6 +8,16 @@ public class User {
 		public static Role get(String name) {
 			return Role.valueOf(name.toUpperCase());
 		}
+
+		public static boolean isAdmin(User user) {
+			return user.getRole().equals(ADMIN);
+		}
+	}
+
+	public static void main(String[] args) {
+		User user = new User("sriram", "srid");
+		user.setRole(Role.ADMIN);
+		System.out.println(Role.isAdmin(user));
 	}
 
 	private String username;

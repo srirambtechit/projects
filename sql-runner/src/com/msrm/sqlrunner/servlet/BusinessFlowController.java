@@ -16,15 +16,17 @@ import javax.servlet.http.HttpSession;
 import org.apache.log4j.Logger;
 
 import com.msrm.sqlrunner.beans.User;
+import com.msrm.sqlrunner.beans.User.Role;
 import com.msrm.sqlrunner.core.UserManager;
 import com.msrm.sqlrunner.exception.ExceptionUtil;
 import com.msrm.sqlrunner.exception.SqlRunnerException;
+import com.msrm.sqlrunner.util.JsonUtil;
 import com.msrm.sqlrunner.util.JsonUtil.ArrayBuilder;
 
 /**
  * Servlet implementation class LoginServlet
  */
-@WebServlet(urlPatterns = {"/bizFlow", "login"})
+@WebServlet(urlPatterns = {"/bizFlow", "/login", "/logout"})
 public class BusinessFlowController extends HttpServlet {
 
 	private Logger logger = Logger.getLogger(BusinessFlowController.class);
@@ -62,26 +64,29 @@ public class BusinessFlowController extends HttpServlet {
 					String password = request.getParameter("password");
 
 					try {
-						User user = UserManager.selectAll().stream().filter(u -> u.getUsername().equals(username) && u.getPassword().equals(password)).findFirst().orElse(null);
+						//@formatter:off
+						User user = UserManager.selectAll()
+										.stream()
+										.filter(u -> u.getUsername().equals(username) && u.getPassword().equals(password))
+										.findFirst()
+										.orElse(null);
+						//@formatter:on
 						if (user == null) {
-							response.sendRedirect("ui?page=login");
+							request.getRequestDispatcher("ui?page=login&error=Invalid Username or Password").include(request, response);
+							return;
+						}
+
+						HttpSession session = request.getSession(true);
+						session.setAttribute("user", user);
+						user.setLoggedIn(true);
+
+						if (Role.isAdmin(user)) {
+							response.sendRedirect("uiFlow?page=user");
+						} else {
+							response.sendRedirect("uiFlow?page=workspace");
 						}
 					} catch (SqlRunnerException e) {
 						e.printStackTrace();
-					}
-
-					User user = new User(username, password);
-					String status = doLogin(user);
-					if (status.contains("error") || status.equals("unknown")) {
-						response.sendRedirect("ui?page=login");
-					}
-					user.setLoggedIn(true);
-					HttpSession session = request.getSession(true);
-					session.setAttribute("user", user);
-					if ("admin".equals(user.getUsername())) {
-						response.sendRedirect("ui?page=user");
-					} else {
-						response.sendRedirect("ui?page=workspace");
 					}
 					break;
 				}
@@ -89,23 +94,29 @@ public class BusinessFlowController extends HttpServlet {
 					String query = request.getParameter("query");
 
 					break;
-				case "logout" :
+				case "doLogout" :
+					HttpSession session = request.getSession(false);
+					session.removeAttribute("user");
+					session.invalidate();
 					break;
 				case "addUser" : {
 					System.out.println("addUser flow");
 					String username = request.getParameter("username");
 					String password = request.getParameter("password");
+					String role = request.getParameter("role");
 					User user = new User(username, password);
+					user.setRole(Role.get(role));
 					String httpResponse = "";
 					try {
 						if (UserManager.add(user)) {
-							httpResponse = "";
+							httpResponse = JsonUtil.Builder.newBuilder().property("status", "success").build();
 						} else {
-							httpResponse = "{ 'error': ''}";
+							httpResponse = JsonUtil.Builder.newBuilder().property("status", "error").property("error", "User already exists").build();
 						}
 					} catch (SqlRunnerException e) {
 						ExceptionUtil.error(e, logger);
 					}
+					System.out.println("UserAddition : " + httpResponse);
 					response.setContentType("application/json");
 					response.getWriter().append(httpResponse);
 					break;
@@ -136,29 +147,11 @@ public class BusinessFlowController extends HttpServlet {
 		ArrayBuilder jsonBuilder = ArrayBuilder.newArrayBuilder();
 		for (int i = 0; i < users.size(); i++) {
 			User user = users.get(i);
-			jsonBuilder.elements(String.valueOf(i), user.getUsername(), user.getPassword());
+			jsonBuilder.elements(String.valueOf(i), user.getUsername(), user.getPassword(), user.getRole().name());
 		}
 		String json = jsonBuilder.build();
 		System.out.println(json);
 		return json;
-	}
-
-	private String doLogin(User user) {
-		try {
-			List<User> users = UserManager.selectAll();
-			long count = users.stream().filter(u -> u.equals(user)).count();
-			logger.info("Count: " + count);
-			// valid user
-			if (count == 1) {
-				return "Admin".equals(user.getUsername()) ? "admin" : user.getUsername();
-			} else {
-				return "unknown";
-			}
-		} catch (SqlRunnerException e) {
-			ExceptionUtil.error(e, logger);
-			return "{ error: Invalid username or password }";
-		}
-
 	}
 
 }

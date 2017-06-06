@@ -14,6 +14,7 @@
 <script type="text/javascript">
 	$(document).ready(
 			function() {
+
 				var dTable = $('#example').DataTable({
 					ajax : "data?action=fetchUser",
 					deferRender : true,
@@ -27,12 +28,27 @@
 						function() {
 							username = $("#new-username").val();
 							password = $("#new-password").val();
+							role = $("input[name='role']:checked").val();
+
+							if (!validateForm(username, password, role)) {
+								$(".notify").removeClass('hide').addClass(
+										'show');
+								return false;
+							} else {
+								$('.notify').addClass('hide').removeClass('show');
+							}
+
 							$.ajax({
 								url : "data?action=addUser&username="
-										+ username + "&password=" + password,
+										+ username + "&password=" + password
+										+ "&role=" + role,
 								method : "POST",
 								success : function(response, status, obj) {
+									alert('status : ' + status);
 									if (status == "success") {
+
+										alert("json : "
+												+ JSON.stringify(response));
 
 										dTable.destroy();
 
@@ -47,9 +63,25 @@
 									}
 								},
 								error : function(error) {
+									alert('Error: ' + error);
 								}
 							});
 						});
+
+				function validateForm(username, password, role) {
+					if (username == '') {
+						$('.notify').text('Please enter username');
+						return false;
+					} else if (password == '') {
+						$('.notify').text('Please enter password');
+						return false;
+					} else if (role == undefined || role == '') {
+						$('.notify').text(
+								'Please select either Admin or User role');
+						return false;
+					}
+					return true;
+				}
 			});
 </script>
 </head>
@@ -81,8 +113,16 @@
 
 					<div class="float-left">
 						<div class="group">
+							<input type="radio" name="role" value="admin"
+								class="input mid-size" /> Admin <input type="radio" name="role"
+								value="user" class="input mid-size" /> User
+						</div>
+					</div>
+
+					<div class="float-left">
+						<div class="group">
 							<input type="submit" id="addUserBtn" class="button mid-size"
-								value="Add user">
+								value="Add user" />
 						</div>
 					</div>
 					<table id="example" class="display nowrap" cellspacing="0"
@@ -92,6 +132,7 @@
 								<th>S.No</th>
 								<th>Username</th>
 								<th>Password</th>
+								<th>Role</th>
 							</tr>
 						</thead>
 					</table>
