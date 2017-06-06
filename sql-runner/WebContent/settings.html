@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html >
+<head>
+  <meta charset="UTF-8">
+  <title>Day 001 Login Form</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+<div class='bg-overlay'>
+	<div class="iwr-content-wrap">
+
+		
+
+		<div class="iwr-form-panel">
+			
+			<div class="notify notify-red">Invalid data has been entered</div> 
+
+			<input id="tab-1" type="radio" name="tab" class="sign-in" checked><label for="tab-1" class="tab">Settings</label>
+			
+			<div class="iwr-ui-form">
+				<div class="float-left">
+					<div class="group">
+						<input id="user" type="text" class="input" placeholder="Database username">
+					</div>
+					<div class="group">
+						<input id="pass" type="password" class="input" data-type="password" placeholder="Database password">
+					</div>
+					<div class="group">
+						<input id="repeatpass" type="password" class="input" data-type="password" placeholder="Repeat database password">
+					</div>
+					<div class="group">
+						<input id="jdbc-url" type="text" class="input" placeholder="Jdbc connection url">
+					</div>
+				</div>
+
+				<div class="float-left">
+					<div class="group">
+						<input id="allowed-user" type="text" class="input" placeholder="Maximum allowed user">
+					</div>
+					<div class="group">
+						<input id="exec-user" type="text" class="input" placeholder="Allowed execution of query per user">
+					</div>
+					<div class="group">
+						<input id="from-time" type="text" class="input" placeholder="Application availability timing from">
+					</div>
+					<div class="group">
+						<input id="to-time" type="text" class="input" placeholder="Application availability timing to">
+					</div>
+					<div class="group">
+						<input type="submit" class="button" value="Save">
+					</div>
+				</div>
+				
+			</div>
+		</div>
+	</div>
+</div>
+  
+</body>
+</html>

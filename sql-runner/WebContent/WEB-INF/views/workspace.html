@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Day 001 Login Form</title>
+<link rel="stylesheet" href="css/jquery.dataTables.min.css" />
+<link rel="stylesheet" href="css/scroller.dataTables.min.css" />
+<link rel="stylesheet" href="css/select.dataTables.min.css" />
+<link rel="stylesheet" href="css/style.css">
+<script type="text/javascript" src="js/jquery-1.12.4.js"></script>
+<script type="text/javascript" src="js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="js/dataTables.scroller.min.js"></script>
+<script type="text/javascript" src="js/dataTables.select.min.js"></script>
+<script type="text/javascript">
+	$(document).ready(function() {
+		
+		var dTable;
+		
+		$("#executeBtn").click(function() {
+			$.ajax({
+				url : "data?action=executeQuery&query=" + $("query").val(),
+				method : "POST",
+				success : function(response, status, obj) {
+					if (status == "success") {
+
+						if(dTable != undefined) {
+							dTable.destroy();							
+						}
+
+						dTable = $('#queryResultPane').DataTable({
+							ajax : "data?action=fetchUser",
+							deferRender : true,
+							scrollY : 200,
+							scrollCollapse : true,
+							scroller : true,
+							select : true
+						});
+					}
+				},
+				error : function(error) {
+				}
+			});
+		});
+
+	});
+</script>
+</head>
+
+<body>
+	<div class='bg-overlay'>
+		<div class="iwr-content-wrap">
+			<div class="iwr-form-panel">
+
+				<div class="notify hide notify-red"></div>
+
+				<input id="tab-1" type="radio" name="tab" class="sign-in" checked><label
+					for="tab-1" class="tab">Workspace</label>
+
+				<div class="iwr-ui-form">
+					<div class="float-left">
+						<div class="group">
+							<textarea class="txarea" id="query" rows="5" cols="105"></textarea>
+						</div>
+					</div>
+
+					<div class="float-left">
+						<div class="group">
+							<input type="submit" id="executeBtn" class="button mid-size"
+								value="Execute">
+						</div>
+					</div>
+					<div class="hide">
+					
+					</div>
+					<table id="queryResultPane" class="display nowrap" cellspacing="0"
+						width="100%">
+						<thead>
+							<tr>
+								<th>ID</th>
+								<th>First name</th>
+								<th>Last name</th>
+								<th>ZIP / Post code</th>
+								<th>Country</th>
+							</tr>
+						</thead>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</body>
+</html>

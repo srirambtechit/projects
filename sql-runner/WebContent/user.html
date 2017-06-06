@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Day 001 Login Form</title>
+<link rel="stylesheet" href="css/jquery.dataTables.min.css" />
+<link rel="stylesheet" href="css/scroller.dataTables.min.css" />
+<link rel="stylesheet" href="css/select.dataTables.min.css" />
+<link rel="stylesheet" href="css/style.css">
+<script type="text/javascript" src="js/jquery-1.12.4.js"></script>
+<script type="text/javascript" src="js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="js/dataTables.scroller.min.js"></script>
+<script type="text/javascript" src="js/dataTables.select.min.js"></script>
+<script type="text/javascript">
+	$(document).ready(function() {
+		$('#example').DataTable({
+			ajax : "data",
+			deferRender : true,
+			scrollY : 200,
+			scrollCollapse : true,
+			scroller : true,
+			select : true
+		});
+	});
+</script>
+</head>
+
+<body>
+	<div class='bg-overlay'>
+		<div class="iwr-content-wrap">
+			<div class="iwr-form-panel">
+
+				<div class="notify notify-red">Invalid data has been entered</div>
+
+				<input id="tab-1" type="radio" name="tab" class="sign-in" checked><label
+					for="tab-1" class="tab">User Management</label>
+
+				<div class="iwr-ui-form">
+					<div class="float-left">
+						<div class="group">
+							<input id="new-username" type="text" class="input mid-size"
+								placeholder="New username">
+						</div>
+					</div>
+
+					<div class="float-left">
+						<div class="group">
+							<input id="new-password" type="text" class="input mid-size"
+								placeholder="New password">
+						</div>
+					</div>
+
+					<div class="float-left">
+						<div class="group">
+							<input type="submit" class="button mid-size" value="Add user">
+						</div>
+					</div>
+					<table id="example" class="display nowrap" cellspacing="0"
+						width="100%">
+						<thead>
+							<tr>
+								<th>ID</th>
+								<th>First name</th>
+								<th>Last name</th>
+								<th>ZIP / Post code</th>
+								<th>Country</th>
+							</tr>
+						</thead>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</body>
+</html>
