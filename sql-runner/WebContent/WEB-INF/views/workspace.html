@@ -14,14 +14,21 @@
 <script type="text/javascript">
 	$(document).ready(function() {
 		
+		$("#queryResultPane").hide();
+		
 		var dTable;
 		
 		$("#executeBtn").click(function() {
 			$.ajax({
-				url : "data?action=executeQuery&query=" + $("query").val(),
+				url : "data?action=executeQuery&query=" + $("#query").val(),
 				method : "POST",
 				success : function(response, status, obj) {
+					
+					
+					
 					if (status == "success") {
+						
+						$("#queryResultPane").show();
 
 						if(dTable != undefined) {
 							dTable.destroy();							
@@ -41,6 +48,15 @@
 				}
 			});
 		});
+		
+		function constructDTable(columns) {
+			//<th>Column name</th>
+			var htmlContent = "";
+			$.each(columns, function(index, value){
+				htmlContent += "<th>"+value+"</th>";	
+			});
+			$("#columnHeader").html(htmlContent);
+		}
 
 	});
 </script>
@@ -75,12 +91,7 @@
 					<table id="queryResultPane" class="display nowrap" cellspacing="0"
 						width="100%">
 						<thead>
-							<tr>
-								<th>ID</th>
-								<th>First name</th>
-								<th>Last name</th>
-								<th>ZIP / Post code</th>
-								<th>Country</th>
+							<tr id="columnHeader">
 							</tr>
 						</thead>
 					</table>

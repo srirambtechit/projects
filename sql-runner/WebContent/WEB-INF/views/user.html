@@ -15,7 +15,7 @@
 	$(document).ready(
 			function() {
 
-				var dTable = $('#example').DataTable({
+				var dTable = $('#userInfoPane').DataTable({
 					ajax : "data?action=fetchUser",
 					deferRender : true,
 					scrollY : 200,
@@ -52,7 +52,7 @@
 
 										dTable.destroy();
 
-										dTable = $('#example').DataTable({
+										dTable = $('#userInfoPane').DataTable({
 											ajax : "data?action=fetchUser",
 											deferRender : true,
 											scrollY : 200,
@@ -125,7 +125,7 @@
 								value="Add user" />
 						</div>
 					</div>
-					<table id="example" class="display nowrap" cellspacing="0"
+					<table id="userInfoPane" class="display nowrap" cellspacing="0"
 						width="100%">
 						<thead>
 							<tr>

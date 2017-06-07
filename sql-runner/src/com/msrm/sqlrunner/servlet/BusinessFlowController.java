@@ -15,8 +15,10 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 
+import com.msrm.sqlrunner.beans.SqlResult;
 import com.msrm.sqlrunner.beans.User;
 import com.msrm.sqlrunner.beans.User.Role;
+import com.msrm.sqlrunner.core.SqlRunner;
 import com.msrm.sqlrunner.core.UserManager;
 import com.msrm.sqlrunner.exception.ExceptionUtil;
 import com.msrm.sqlrunner.exception.SqlRunnerException;
@@ -90,15 +92,55 @@ public class BusinessFlowController extends HttpServlet {
 					}
 					break;
 				}
-				case "executeQuery" :
-					String query = request.getParameter("query");
+				case "executeQuery" : {
+					String sql = request.getParameter("query");
+					User user = (User) request.getSession(false).getAttribute("user");
+					try {
+						SqlResult sqlResult = SqlRunner.run(user, sql);
 
+						String columnJson = JsonUtil.ArrayBuilder.newArrayBuilder().elements(sqlResult.getColumns()).build();
+						System.out.println("ColumnJson : " + columnJson);
+
+						ArrayBuilder rowJsonBuilder = JsonUtil.ArrayBuilder.newArrayBuilder();
+						for (List<String> list : sqlResult.getRows()) {
+							rowJsonBuilder.elements(list);
+						}
+						String rowJson = rowJsonBuilder.build();
+						System.out.println("RowJson : " + rowJson);
+
+						//@formatter:off
+						String resultJson = JsonUtil.Builder.newBuilder()
+								.property("status", "success")
+								.property("columns", columnJson)
+								.property("rows", rowJson)
+								.build();
+						//@formatter:on
+						System.out.println("ResultJson : " + resultJson);
+
+						response.setContentType("application/json");
+						response.getWriter().append(resultJson);
+					} catch (SqlRunnerException e) {
+						// SQL exception occurred due to whatever reason
+						response.setContentType("application/json");
+						//@formatter:off
+						String resultJson = JsonUtil.Builder.newBuilder()
+								.property("status", "error")
+								.property("type", "SQL Error")
+								.property("cause", e.getCause().getMessage())
+								.property("error", e.getMessage())
+								.build();
+						//@formatter:on
+						response.getWriter().append(resultJson);
+					}
 					break;
-				case "doLogout" :
+				}
+				case "doLogout" : {
 					HttpSession session = request.getSession(false);
 					session.removeAttribute("user");
 					session.invalidate();
+					request.getRequestDispatcher("").forward(request, response);
 					break;
+				}
 				case "addUser" : {
 					System.out.println("addUser flow");
 					String username = request.getParameter("username");
@@ -121,17 +163,19 @@ public class BusinessFlowController extends HttpServlet {
 					response.getWriter().append(httpResponse);
 					break;
 				}
-				case "fetchUser" :
+				case "fetchUser" : {
 					String json = fetchUser();
 					response.setContentType("application/json");
 					response.getWriter().append(json.toString());
 					break;
-				case "fetchSampleData" :
+				}
+				case "fetchSampleData" : {
 					response.setContentType("application/json");
 					String contextPath = request.getServletContext().getRealPath("/");
 					String jsonString = Files.readAllLines(FileSystems.getDefault().getPath(contextPath + "/data/2500.txt")).stream().reduce((s1, s2) -> s1 + s2).orElse("{}");
 					response.getWriter().append(jsonString);
 					break;
+				}
 			}
 		}
 	}

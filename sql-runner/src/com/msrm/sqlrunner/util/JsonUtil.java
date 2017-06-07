@@ -26,6 +26,17 @@ public class JsonUtil {
 			return new ArrayBuilder();
 		}
 
+
+		public ArrayBuilder elements(List<String> args) {
+			List<String> array = new ArrayList<>();
+			for (String str : args) {
+				array.add(quote + str + quote);
+			}
+			list.add(array);
+			return this;
+		}
+
+		
 		public ArrayBuilder elements(String... args) {
 			List<String> array = new ArrayList<>();
 			for (String str : args) {
