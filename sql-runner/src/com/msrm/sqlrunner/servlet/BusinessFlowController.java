@@ -1,8 +1,10 @@
 package com.msrm.sqlrunner.servlet;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
+import java.util.Base64;
 import java.util.List;
 import java.util.Objects;
 
@@ -98,7 +100,7 @@ public class BusinessFlowController extends HttpServlet {
 					try {
 						SqlResult sqlResult = SqlRunner.run(user, sql);
 
-						String columnJson = JsonUtil.ArrayBuilder.newArrayBuilder().elements(sqlResult.getColumns()).build();
+						String columnJson = JsonUtil.ArrayBuilder.newArrayBuilder().singleArray(sqlResult.getColumns());
 						System.out.println("ColumnJson : " + columnJson);
 
 						ArrayBuilder rowJsonBuilder = JsonUtil.ArrayBuilder.newArrayBuilder();
@@ -108,11 +110,15 @@ public class BusinessFlowController extends HttpServlet {
 						String rowJson = rowJsonBuilder.build();
 						System.out.println("RowJson : " + rowJson);
 
+						String encodedColumnString = new String(java.util.Base64.getMimeEncoder().encode(columnJson.getBytes()), StandardCharsets.UTF_8);
+						String encodedRowString = new String(java.util.Base64.getMimeEncoder().encode(rowJson.getBytes()), StandardCharsets.UTF_8);
+						
+						
 						//@formatter:off
 						String resultJson = JsonUtil.Builder.newBuilder()
 								.property("status", "success")
-								.property("columns", columnJson)
-								.property("rows", rowJson)
+								.json("columns", encodedColumnString)
+								.json("rows", encodedRowString)
 								.build();
 						//@formatter:on
 						System.out.println("ResultJson : " + resultJson);
@@ -126,7 +132,7 @@ public class BusinessFlowController extends HttpServlet {
 						String resultJson = JsonUtil.Builder.newBuilder()
 								.property("status", "error")
 								.property("type", "SQL Error")
-								.property("cause", e.getCause().getMessage())
+								.property("cause", (e.getCause() != null) ? e.getCause().getMessage() : "")
 								.property("error", e.getMessage())
 								.build();
 						//@formatter:on

@@ -1,6 +1,7 @@
 package com.msrm.sqlrunner.util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +27,6 @@ public class JsonUtil {
 			return new ArrayBuilder();
 		}
 
-
 		public ArrayBuilder elements(List<String> args) {
 			List<String> array = new ArrayList<>();
 			for (String str : args) {
@@ -36,7 +36,6 @@ public class JsonUtil {
 			return this;
 		}
 
-		
 		public ArrayBuilder elements(String... args) {
 			List<String> array = new ArrayList<>();
 			for (String str : args) {
@@ -44,6 +43,17 @@ public class JsonUtil {
 			}
 			list.add(array);
 			return this;
+		}
+
+		public String singleArray(List<String> args) {
+			List<String> array = new ArrayList<>();
+			for (String str : args) {
+				array.add(quote + str + quote);
+			}
+			StringBuffer json = new StringBuffer(array.toString());
+			json.insert(0, openBrace + quote + "aaData" + quote + ":");
+			json.append(closeBrace);
+			return json.toString();
 		}
 
 		public String build() {
@@ -82,6 +92,12 @@ public class JsonUtil {
 			return json;
 		}
 
+		public Builder json(String name, String json) {
+			String plainString = json.replaceAll("\"", "\\\\\"");
+			property(name, plainString);
+			return this;
+		}
+
 		public String buildAsDatatable() {
 			if (map.isEmpty())
 				return openBrace + closeBrace;
@@ -95,14 +111,22 @@ public class JsonUtil {
 	}
 
 	public static void main(String[] args) {
+
+		String json = "{ \"status\" : \"success\"}";
+		String plainString = json.replaceAll("\"", "\\\\\"");
+		System.out.println("Embed json : " + plainString);
+
+		String columns = ArrayBuilder.newArrayBuilder().singleArray(Arrays.asList("code", "name", "price"));
+		System.out.println(columns);
+
 		//@formatter:off
-		String json = JsonUtil.ArrayBuilder.newArrayBuilder()
+		String json1 = JsonUtil.ArrayBuilder.newArrayBuilder()
 				.elements("1", "sriram", "1000")
 				.elements("2", "prabhu", "1001")
 				.elements("3","kannan", "1010")
 				.build();
 		//@formatter:on
-		System.out.println(json);
+		System.out.println(json1);
 	}
 
 	public void testArray() {

@@ -47,9 +47,6 @@
 									alert('status : ' + status);
 									if (status == "success") {
 
-										alert("json : "
-												+ JSON.stringify(response));
-
 										dTable.destroy();
 
 										dTable = $('#userInfoPane').DataTable({
@@ -63,7 +60,8 @@
 									}
 								},
 								error : function(error) {
-									alert('Error: ' + error);
+									$(".notify").removeClass('hide').addClass('show');
+									$('.notify').text(error);
 								}
 							});
 						});

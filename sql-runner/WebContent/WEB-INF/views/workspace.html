@@ -8,6 +8,7 @@
 <link rel="stylesheet" href="css/select.dataTables.min.css" />
 <link rel="stylesheet" href="css/style.css">
 <script type="text/javascript" src="js/jquery-1.12.4.js"></script>
+<script type="text/javascript" src="js/jquery.base64.js"></script>
 <script type="text/javascript" src="js/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="js/dataTables.scroller.min.js"></script>
 <script type="text/javascript" src="js/dataTables.select.min.js"></script>
@@ -22,26 +23,42 @@
 			$.ajax({
 				url : "data?action=executeQuery&query=" + $("#query").val(),
 				method : "POST",
-				success : function(response, status, obj) {
+				success : function(response, httpStatus, obj) {
 					
-					
-					
-					if (status == "success") {
+					if (httpStatus == "success") {
 						
-						$("#queryResultPane").show();
-
-						if(dTable != undefined) {
-							dTable.destroy();							
+						var jsonObj = response;
+						
+						if(jsonObj.status == "success") {
+						
+							$("#queryResultPane").show();
+							
+							columns = jQuery.parseJSON($.base64.atob(jsonObj.columns, true));
+							
+							var th = "";
+							$.each(columns.aaData, function(index, value){
+								th += "<th>"+ value +"</th>";	
+							});
+							$("#columnHeader").html(th);
+							
+							rows = jQuery.parseJSON($.base64.atob(jsonObj.rows, true));
+							
+							if(dTable != undefined) {
+								dTable.destroy();							
+							}
+	
+							dTable = $('#queryResultPane').DataTable({
+								data : rows.aaData,
+								deferRender : true,
+								scrollY : 200,
+								scrollCollapse : true,
+								scroller : true,
+								select : true
+							});
+						}else if(jsonObj.status == "error") {
+							$(".notify").removeClass('hide').addClass('show');
+							$('.notify').text(jsonObj.type + ": " + jsonObj.error);
 						}
-
-						dTable = $('#queryResultPane').DataTable({
-							ajax : "data?action=fetchUser",
-							deferRender : true,
-							scrollY : 200,
-							scrollCollapse : true,
-							scroller : true,
-							select : true
-						});
 					}
 				},
 				error : function(error) {
@@ -49,14 +66,10 @@
 			});
 		});
 		
-		function constructDTable(columns) {
-			//<th>Column name</th>
-			var htmlContent = "";
-			$.each(columns, function(index, value){
-				htmlContent += "<th>"+value+"</th>";	
-			});
-			$("#columnHeader").html(htmlContent);
-		}
+// 		function checkEncodedString(encodedString) {
+// 			if(encodedString.endsWith(":"))
+// 				return encodedString
+// 		}
 
 	});
 </script>
