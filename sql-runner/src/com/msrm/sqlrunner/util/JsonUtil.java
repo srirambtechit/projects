@@ -1,7 +1,9 @@
 package com.msrm.sqlrunner.util;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -92,9 +94,14 @@ public class JsonUtil {
 			return json;
 		}
 
-		public Builder json(String name, String json) {
-			String plainString = json.replaceAll("\"", "\\\\\"");
-			property(name, plainString);
+		public Builder encodeJson(String name, String json) {
+			String encodedJsonString = Base64.getEncoder().encodeToString(json.getBytes(StandardCharsets.UTF_8));
+			if (encodedJsonString.endsWith("==")) {
+				encodedJsonString = encodedJsonString.substring(0, encodedJsonString.length() - 2);
+			} else if (encodedJsonString.endsWith("=")) {
+				encodedJsonString = encodedJsonString.substring(0, encodedJsonString.length() - 1);
+			}
+			property(name, encodedJsonString);
 			return this;
 		}
 

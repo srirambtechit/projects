@@ -1,10 +1,8 @@
 package com.msrm.sqlrunner.servlet;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
-import java.util.Base64;
 import java.util.List;
 import java.util.Objects;
 
@@ -110,15 +108,11 @@ public class BusinessFlowController extends HttpServlet {
 						String rowJson = rowJsonBuilder.build();
 						System.out.println("RowJson : " + rowJson);
 
-						String encodedColumnString = new String(java.util.Base64.getMimeEncoder().encode(columnJson.getBytes()), StandardCharsets.UTF_8);
-						String encodedRowString = new String(java.util.Base64.getMimeEncoder().encode(rowJson.getBytes()), StandardCharsets.UTF_8);
-						
-						
 						//@formatter:off
 						String resultJson = JsonUtil.Builder.newBuilder()
 								.property("status", "success")
-								.json("columns", encodedColumnString)
-								.json("rows", encodedRowString)
+								.encodeJson("columns", columnJson)
+								.encodeJson("rows", rowJson)
 								.build();
 						//@formatter:on
 						System.out.println("ResultJson : " + resultJson);
