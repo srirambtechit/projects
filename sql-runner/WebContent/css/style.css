@@ -60,7 +60,7 @@ a {
 
 .iwr-form-panel {
 	width: 100%;
-	padding: 30px;
+	/* padding: 30px; */
 }
 
 .iwr-form-panel .sign-in {
@@ -96,6 +96,7 @@ a {
 	perspective: 1000px;
 	-webkit-transform-style: preserve-3d;
 	transform-style: preserve-3d;
+	overflow: scroll;
 }
 
 .iwr-ui-form .group {
@@ -161,6 +162,17 @@ input:-ms-input-placeholder { /* IE 10+ */
 
 input:focus, select:focus, textarea:focus, button:focus {
 	outline: none;
+}
+
+.menu {
+	float: right;
+	color: #ffff00;
+	position: relative;
+	top: 40px;
+}
+
+.menu a:hover {
+	text-decoration: underline;
 }
 
 div .float-left {

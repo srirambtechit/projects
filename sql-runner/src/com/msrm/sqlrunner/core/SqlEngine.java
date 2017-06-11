@@ -21,6 +21,8 @@ import javax.sql.DataSource;
 import org.apache.log4j.Logger;
 
 import com.msrm.sqlrunner.beans.SqlResult;
+import com.msrm.sqlrunner.exception.ExceptionUtil;
+import com.msrm.sqlrunner.exception.SqlRunnerException;
 
 public class SqlEngine {
 
@@ -32,16 +34,17 @@ public class SqlEngine {
 		workerThreads = Executors.newWorkStealingPool();
 	}
 
-	public static SqlResult executeSQL(String sql) {
+	public static SqlResult executeSQL(String sql) throws SqlRunnerException {
 		logger.info("Executing SQL : " + sql);
+		System.out.println("Executing SQL : " + sql);
 		Task task = new Task(sql);
 		Future<SqlResult> future = workerThreads.submit(task);
 		try {
 			return future.get();
 		} catch (InterruptedException | ExecutionException e) {
-			e.printStackTrace();
+			System.out.println("ExecutorService Exception");
+			throw new SqlRunnerException(e.getMessage());
 		}
-		return null;
 	}
 
 	private static class Task implements Callable<SqlResult> {
@@ -53,7 +56,9 @@ public class SqlEngine {
 		}
 
 		@Override
-		public SqlResult call() throws Exception {
+		public SqlResult call() throws SqlRunnerException {
+			System.out.println("Query is running on DB");
+			SqlResult sqlResult = new SqlResult();
 			try {
 				Context initCtx = new InitialContext();
 				Context envCtx = (Context) initCtx.lookup("java:comp/env");
@@ -68,7 +73,6 @@ public class SqlEngine {
 						Statement st = con.createStatement();
 						ResultSet rs = st.executeQuery(sql);) {
 
-					SqlResult sqlResult = new SqlResult();
 					ResultSetMetaData metaData = rs.getMetaData();
 					int columnCount = metaData.getColumnCount();
 					for (int i = 1; i <= columnCount; i++) {
@@ -81,14 +85,27 @@ public class SqlEngine {
 						}
 						sqlResult.getRows().add(row);
 					}
-					return sqlResult;
+
+					// try {
+					// Thread.sleep(10000);
+					// } catch (InterruptedException e) {
+					// e.printStackTrace();
+					// }
+
+					System.out.println("sqlResult : " + sqlResult);
 				} catch (SQLException e) {
-					e.printStackTrace();
+					System.out.println("Error at threading");
+					try {
+						sqlResult.setErrorJson(ExceptionUtil.raiseSQLException(e, logger));
+					} catch (Throwable t) {
+						System.out.println("Exception captured and supressed!!!");
+					}
 				}
 			} catch (NamingException e) {
-				e.printStackTrace();
+				System.out.println("Error at naming");
+				sqlResult.setErrorJson(ExceptionUtil.raiseNamingException(e, logger));
 			}
-			return null;
+			return sqlResult;
 		}
 
 	}

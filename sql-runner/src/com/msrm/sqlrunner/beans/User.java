@@ -14,12 +14,6 @@ public class User {
 		}
 	}
 
-	public static void main(String[] args) {
-		User user = new User("sriram", "srid");
-		user.setRole(Role.ADMIN);
-		System.out.println(Role.isAdmin(user));
-	}
-
 	private String username;
 	private String password;
 	private Role role;

@@ -1,7 +1,6 @@
 package com.msrm.sqlrunner.servlet.errorhandler;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -11,14 +10,16 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 
+import com.msrm.sqlrunner.util.JsonUtil;
+
 /**
  * Servlet implementation class AppErrorHandler
  */
 @WebServlet("/appErrorHandler")
 public class AppErrorHandler extends HttpServlet {
-	
+
 	private static final long serialVersionUID = 1L;
-	
+
 	private Logger logger = Logger.getLogger(AppErrorHandler.class);
 
 	/**
@@ -32,8 +33,10 @@ public class AppErrorHandler extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		logger.info("Application error thrown");
+		System.out.println("Application error thrown");
+
 		// Analyze the servlet exception
 		Throwable throwable = (Throwable) request.getAttribute("javax.servlet.error.exception");
 		Integer statusCode = (Integer) request.getAttribute("javax.servlet.error.status_code");
@@ -47,34 +50,31 @@ public class AppErrorHandler extends HttpServlet {
 		}
 
 		// Set response content type
-		response.setContentType("text/html");
+		response.setContentType("application/json");
 
-		PrintWriter out = response.getWriter();
-		out.write("<html><head><title>Exception/Error Details</title></head><body>");
-		if (statusCode != 500) {
-			out.write("<h3>Error Details</h3>");
-			out.write("<strong>Status Code</strong>:" + statusCode + "<br>");
-			out.write("<strong>Requested URI</strong>:" + requestUri);
-		} else {
-			out.write("<h3>Exception Details</h3>");
-			out.write("<ul><li>Servlet Name:" + servletName + "</li>");
-			out.write("<li>Exception Name:" + throwable.getClass().getName() + "</li>");
-			out.write("<li>Requested URI:" + requestUri + "</li>");
-			out.write("<li>Exception Message:" + throwable.getMessage() + "</li>");
-			out.write("</ul>");
-		}
+		//@formatter:off
+		String jsonResponse = JsonUtil.Builder
+			.newBuilder()
+			.property("status", "error")
+			.property("type", "Application Error")
+			.property("servletName", servletName)
+			.property("statusCode",String.valueOf(statusCode))
+			.property("occurredAt", requestUri)
+			.property("message", throwable.getMessage())
+			.build();
+		//@formatter:on
 
-		out.write("<br><br>");
-		out.write("<a href=\"login.html\">Login Page</a>");
-		out.write("</body></html>");
+		System.out.println("Error : " + jsonResponse);
+		response.getWriter().write(jsonResponse);
+
+		request.getRequestDispatcher("uiFlow?page=error").forward(request, response);
 	}
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doGet(request, response);
 	}
 

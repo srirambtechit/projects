@@ -68,7 +68,10 @@ public class UIController extends HttpServlet {
 					dispatcher.forward(request, response);
 					break;
 				}
-				case "logout" : {
+				case "error" : {
+					RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/views/error.html");
+					System.out.println();
+					dispatcher.forward(request, response);
 					break;
 				}
 			}

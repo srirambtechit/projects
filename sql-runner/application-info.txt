@@ -1,0 +1,28 @@
+// Application common error
+{
+ "status" : "error",
+  "type" : "SQL Error",
+  "cause" : "DNS name is not resolved",
+  "message" : "Database system is not reachable"
+}
+
+// SQL output - success
+{
+ "status": "success",
+  "columns" : "",
+  "rows" : ""
+}
+
+{
+ "status" : "error",
+ "type" : "Application Error",
+ "statusCode" : "500",
+ "occurredAt" : "/sql-runner/login",
+ "message" : "Internal Server error"
+}
+
+{
+ "status":"success", 
+ "columns":"eyJhYURhdGEiOlsiVVNFUl9OQU1FIiwgIkdFTkRFUiIsICJQQVNTV09SRCJdfQ", 
+ "rows":"eyJhYURhdGEiOltbImplcnJ5IiwgIk0iLCAiamVycnkwMDEiXSwgWyJsYXVyYSIsICJGIiwgImxhdTQ1NCJdLCBbIm1pa2UiLCAiTSIsICJtbW1tIl0sIFsic3JpcmFtIiwgIk0iLCAic3JpcmFtMTIzIl0sIFsidG9tIiwgIk0iLCAidG9tMDAxIl1dfQ"
+}

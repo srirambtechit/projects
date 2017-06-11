@@ -7,6 +7,15 @@ public class SqlResult {
 
 	private List<String> columns;
 	private List<List<String>> rows;
+	private String errorJson;
+
+	public String getErrorJson() {
+		return errorJson;
+	}
+
+	public void setErrorJson(String errorJson) {
+		this.errorJson = errorJson;
+	}
 
 	public List<String> getColumns() {
 		if (columns == null)
@@ -18,6 +27,11 @@ public class SqlResult {
 		if (rows == null)
 			this.rows = new ArrayList<>();
 		return rows;
+	}
+
+	@Override
+	public String toString() {
+		return "SqlResult [columns=" + columns + ", rows=" + rows + ", errorJson=" + errorJson + "]";
 	}
 
 }

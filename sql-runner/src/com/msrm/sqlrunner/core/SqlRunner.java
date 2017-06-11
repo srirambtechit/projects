@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 
 import com.msrm.sqlrunner.beans.SqlResult;
 import com.msrm.sqlrunner.beans.User;
+import com.msrm.sqlrunner.exception.ExceptionUtil;
 import com.msrm.sqlrunner.exception.SqlRunnerException;
 
 public final class SqlRunner {
@@ -58,18 +59,17 @@ public final class SqlRunner {
 	}
 
 	public static SqlResult run(User user, String sql) throws SqlRunnerException {
+		System.out.println(registry);
 		if (!isSQLRunning(user)) {
 			registerSQL(user, sql);
 			SqlResult sqlResult = SqlEngine.executeSQL(sql);
-			sqlResult.getColumns().forEach(System.out::println);
-			sqlResult.getRows().forEach(r -> r.forEach(System.out::println));
 			completeSQL(user);
 			return sqlResult;
 		} else {
 			String message = user.getUsername() + " is already executing a SQL; Please wait for " + sql;
-			logger.info(message);
-			throw new SqlRunnerException(message);
+			ExceptionUtil.raiseApplicationError(message, logger);
 		}
+		return null;
 	}
 
 	public static void main(String[] args) throws SqlRunnerException {
@@ -86,7 +86,6 @@ public final class SqlRunner {
 		run(user2, sql2);
 		run(user1, sql1);
 		run(user3, sql3);
-
 	}
 
 }

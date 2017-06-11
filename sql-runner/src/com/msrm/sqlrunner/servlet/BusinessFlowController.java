@@ -74,7 +74,8 @@ public class BusinessFlowController extends HttpServlet {
 										.orElse(null);
 						//@formatter:on
 						if (user == null) {
-							request.getRequestDispatcher("ui?page=login&error=Invalid Username or Password").include(request, response);
+							System.out.println("User is null");
+							request.getRequestDispatcher("uiFlow?page=login").include(request, response);
 							return;
 						}
 
@@ -98,6 +99,11 @@ public class BusinessFlowController extends HttpServlet {
 					try {
 						SqlResult sqlResult = SqlRunner.run(user, sql);
 
+						if (sqlResult.getErrorJson() != null && !sqlResult.getErrorJson().isEmpty()) {
+							response.setContentType("application/json");
+							response.getWriter().append(sqlResult.getErrorJson());
+							return;
+						}
 						String columnJson = JsonUtil.ArrayBuilder.newArrayBuilder().singleArray(sqlResult.getColumns());
 						System.out.println("ColumnJson : " + columnJson);
 
@@ -122,15 +128,8 @@ public class BusinessFlowController extends HttpServlet {
 					} catch (SqlRunnerException e) {
 						// SQL exception occurred due to whatever reason
 						response.setContentType("application/json");
-						//@formatter:off
-						String resultJson = JsonUtil.Builder.newBuilder()
-								.property("status", "error")
-								.property("type", "SQL Error")
-								.property("cause", (e.getCause() != null) ? e.getCause().getMessage() : "")
-								.property("error", e.getMessage())
-								.build();
-						//@formatter:on
-						response.getWriter().append(resultJson);
+						System.out.println("Biz flow error : " + e.getMessage());
+						response.getWriter().append(e.getMessage());
 					}
 					break;
 				}
@@ -138,7 +137,7 @@ public class BusinessFlowController extends HttpServlet {
 					HttpSession session = request.getSession(false);
 					session.removeAttribute("user");
 					session.invalidate();
-					request.getRequestDispatcher("").forward(request, response);
+					request.getRequestDispatcher("uiFlow?page=login").forward(request, response);
 					break;
 				}
 				case "addUser" : {
@@ -157,6 +156,7 @@ public class BusinessFlowController extends HttpServlet {
 						}
 					} catch (SqlRunnerException e) {
 						ExceptionUtil.error(e, logger);
+						httpResponse = e.getMessage();
 					}
 					System.out.println("UserAddition : " + httpResponse);
 					response.setContentType("application/json");

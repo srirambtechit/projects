@@ -14,12 +14,10 @@
 <script type="text/javascript" src="js/dataTables.select.min.js"></script>
 <script type="text/javascript">
 	$(document).ready(function() {
-		
-		$("#queryResultPane").hide();
-		
-		var dTable;
-		
 		$("#executeBtn").click(function() {
+			
+			$("#queryResultDiv").hide();
+			
 			$.ajax({
 				url : "data?action=executeQuery&query=" + $("#query").val(),
 				method : "POST",
@@ -27,27 +25,32 @@
 					
 					if (httpStatus == "success") {
 						
+						$(".notify").removeClass('show').addClass('hide');
+						$('.notify').text('');
+						
 						var jsonObj = response;
+						$("#queryResultDiv").show();
+						$("#queryResultDiv").html('');
 						
 						if(jsonObj.status == "success") {
-						
-							$("#queryResultPane").show();
+							
+							// Rendering HTML table structure for dataTable
+							var htmlTable = '<table id="queryResultPane" class="display nowrap" cellspacing="0" width="100%">'+
+								'<thead>'+
+									'<tr>';
 							
 							columns = jQuery.parseJSON($.base64.atob(jsonObj.columns, true));
 							
-							var th = "";
 							$.each(columns.aaData, function(index, value){
-								th += "<th>"+ value +"</th>";	
+								htmlTable += "<th>"+ value +"</th>";	
 							});
-							$("#columnHeader").html(th);
+							
+							htmlTable += '</tr></thead></table>';
+							$("#queryResultDiv").html(htmlTable);
 							
 							rows = jQuery.parseJSON($.base64.atob(jsonObj.rows, true));
 							
-							if(dTable != undefined) {
-								dTable.destroy();							
-							}
-	
-							dTable = $('#queryResultPane').DataTable({
+							$('#queryResultPane').DataTable({
 								data : rows.aaData,
 								deferRender : true,
 								scrollY : 200,
@@ -61,16 +64,11 @@
 						}
 					}
 				},
-				error : function(error) {
+				error : function(error, httpStatus, obj) {
+					alert('err: '  + error + '\nstat: ' + httpStatus + '\nobj: ' + obj);
 				}
 			});
 		});
-		
-// 		function checkEncodedString(encodedString) {
-// 			if(encodedString.endsWith(":"))
-// 				return encodedString
-// 		}
-
 	});
 </script>
 </head>
@@ -98,16 +96,9 @@
 								value="Execute">
 						</div>
 					</div>
-					<div class="hide">
 					
+					<div id="queryResultDiv">
 					</div>
-					<table id="queryResultPane" class="display nowrap" cellspacing="0"
-						width="100%">
-						<thead>
-							<tr id="columnHeader">
-							</tr>
-						</thead>
-					</table>
 				</div>
 			</div>
 		</div>
