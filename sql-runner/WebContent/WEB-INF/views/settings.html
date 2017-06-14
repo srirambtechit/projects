@@ -2,54 +2,141 @@
 <html >
 <head>
   <meta charset="UTF-8">
-  <title>Day 001 Login Form</title>
+  <title>SqlRunner - Settings</title>
   <link rel="stylesheet" href="css/style.css">
+  <script type="text/javascript" src="js/jquery-1.12.4.js"></script>
+  <script type="text/javascript">
+  	$(document).ready(function() {
+  		
+  		// loading configuration details
+		$.ajax({
+ 			url : "data?action=fetchSettings",
+			method : "POST",
+			success : function(jsonResponse, status, obj) {
+				if (status == "success") {
+					$.each(jsonResponse, function(key, value) {
+						$("input[name="+key+"]").val(value);
+					});
+				}
+			},
+			error : function(error) {
+				$(".notify").removeClass('hide').addClass('show');
+				$('.notify').text(error);
+			}
+ 		});
+
+  		var errorMessage = "";
+  		$("#saveBtn").click(function() {
+  			$('.notify').removeClass('show notify-red notify-green').addClass('hide').text('');
+  			if(!validateForm()) {
+  				$('.notify').removeClass('hide').addClass('show notify-red').text(errorMessage);  				
+  			}
+  			
+  			queryString = $("#settingsForm").serialize();
+  			
+  			$.ajax({
+  	 			url : "data?action=saveSettings&" + queryString,
+  				method : "POST",
+  				success : function(response, status, obj) {
+  					if (response.status == "success") {
+  						$('.notify').removeClass('hide notify-red').addClass('show notify-green').text(response.message);
+  					} else if(response.status == 'error') {
+  						$('.notify').removeClass('hide notify-red').addClass('show notify-green').text(response.message);
+  					}
+  				},
+  				error : function(error) {
+  					$(".notify").removeClass('hide').addClass('show');
+  					$('.notify').text(error);
+  				}
+  	 		});
+  		});
+  		
+  		function validateForm() {
+  			validity = true;
+  			errorMessage = "";
+  			
+  			$.each($(":input"), function() {
+  				if(this.id != 'tab-1' && $(this).val() == "") {
+  					errorMessage = this.placeholder + " is missing";
+  					$(this).focus();
+  					validity = false;
+  					return false;
+  				}
+  			});
+  			
+  			if($("#pass").val() != $("#repeatpass").val()) {
+  				errorMessage = "Password doesn't match";
+  				validity = false;
+  			}
+  			
+  			return validity;
+  		}
+  	});
+  </script>
 </head>
 
 <body>
 <div class='bg-overlay'>
 	<div class="iwr-content-wrap">
+	
+		<div class="menu">
+			<a href="logout?action=doLogout">Log off</a>
+			&nbsp;
+			<a href="ui?page=user">User Management</a>
+		</div>
 
 		<div class="iwr-form-panel">
 			
-			<div class="notify hide notify-red"></div> 
+			<div class="notify hide"></div> 
 
 			<input id="tab-1" type="radio" name="tab" class="sign-in" checked><label for="tab-1" class="tab">Settings</label>
 			
 			<div class="iwr-ui-form">
-				<div class="float-left">
-					<div class="group">
-						<input id="user" type="text" class="input" placeholder="Database username">
+				<form method="post" id="settingsForm">
+					<div class="float-left">
+						<div class="group">
+							<label for="user">Username</label>
+							<input id="user" name="dbUsername" type="text" class="input" placeholder="Database username">
+						</div>
+						<div class="group">
+							<label for="pass">Password</label>
+							<input id="pass" name="dbPassword" type="password" class="input" data-type="password" placeholder="Database password">
+						</div>
+						<div class="group">
+							<label for="repeatpass">Confirm password</label>
+							<input id="repeatpass" name="dbPassword" type="password" class="input" data-type="password" placeholder="Repeat database password">
+						</div>
+						<div class="group">
+							<label for="jdbc-url">JDBC Url</label>
+							<input id="jdbc-url" name="jdbcUrl" type="text" class="input" placeholder="Jdbc connection url">
+						</div>
 					</div>
-					<div class="group">
-						<input id="pass" type="password" class="input" data-type="password" placeholder="Database password">
+	
+					<div class="float-left">
+						<div class="group">
+							<label for="pass">Maximum allowed user</label>
+							<input id="allowed-user" name="userMaxAllowed" type="text" class="input" placeholder="Maximum allowed user">
+						</div>
+						<div class="group">
+							<label for="pass">Allowed execution of query per user</label>
+							<input id="exec-user"  name="sqlAllowedPerUser" type="text" class="input" placeholder="Allowed execution of query per user">
+						</div>
+						<div class="group">
+							<label for="pass">Application availability 'from' timing</label>
+							<input id="from-time" name="allowedTimeFrom" type="text" class="input" placeholder="Application availability 'from' timing">
+						</div>
+						<div class="group">
+							<label for="pass">Application availability 'to' timing</label>
+							<input id="to-time" name="allowedTimeTo" type="text" class="input" placeholder="Application availability 'to' timing">
+						</div>
+						<div class="group">
+							<input type="submit" id="saveBtn" class="button" value="Save">
+						</div>
 					</div>
-					<div class="group">
-						<input id="repeatpass" type="password" class="input" data-type="password" placeholder="Repeat database password">
+					<div class="float-left">
+						<button id="serverRestartBtn">Restart Tomcat Server</button>
 					</div>
-					<div class="group">
-						<input id="jdbc-url" type="text" class="input" placeholder="Jdbc connection url">
-					</div>
-				</div>
-
-				<div class="float-left">
-					<div class="group">
-						<input id="allowed-user" type="text" class="input" placeholder="Maximum allowed user">
-					</div>
-					<div class="group">
-						<input id="exec-user" type="text" class="input" placeholder="Allowed execution of query per user">
-					</div>
-					<div class="group">
-						<input id="from-time" type="text" class="input" placeholder="Application availability timing from">
-					</div>
-					<div class="group">
-						<input id="to-time" type="text" class="input" placeholder="Application availability timing to">
-					</div>
-					<div class="group">
-						<input type="submit" class="button" value="Save">
-					</div>
-				</div>
-				
+				</form>
 			</div>
 		</div>
 	</div>

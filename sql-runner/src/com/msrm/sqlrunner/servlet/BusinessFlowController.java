@@ -3,7 +3,12 @@ package com.msrm.sqlrunner.servlet;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 
 import javax.servlet.ServletException;
@@ -18,6 +23,7 @@ import org.apache.log4j.Logger;
 import com.msrm.sqlrunner.beans.SqlResult;
 import com.msrm.sqlrunner.beans.User;
 import com.msrm.sqlrunner.beans.User.Role;
+import com.msrm.sqlrunner.core.Configs;
 import com.msrm.sqlrunner.core.SqlRunner;
 import com.msrm.sqlrunner.core.UserManager;
 import com.msrm.sqlrunner.exception.ExceptionUtil;
@@ -174,6 +180,66 @@ public class BusinessFlowController extends HttpServlet {
 					String contextPath = request.getServletContext().getRealPath("/");
 					String jsonString = Files.readAllLines(FileSystems.getDefault().getPath(contextPath + "/data/2500.txt")).stream().reduce((s1, s2) -> s1 + s2).orElse("{}");
 					response.getWriter().append(jsonString);
+					break;
+				}
+				case "fetchSettings" : {
+					//@formatter:off
+					String jsonStrign = JsonUtil.Builder.newBuilder()
+						.property("dbUsername", Configs.value(Configs.DB_USERNAME))
+						.property("dbPassword", Configs.value(Configs.DB_PASSWORD))
+						.property("jdbcUrl", Configs.value(Configs.DB_JDBCURL))
+						.property("allowedTimeFrom", Configs.value(Configs.APP_ALLOWED_TIME_FROM))
+						.property("allowedTimeTo", Configs.value(Configs.APP_ALLOWED_TIME_TO))
+						.property("sqlAllowedPerUser", Configs.value(Configs.APP_SQL_ALLOWED_PER_USER))
+						.property("userMaxAllowed", Configs.value(Configs.APP_USER_MAXALLOWED))
+						.build();
+					//@formatter:on
+					response.setContentType("application/json");
+					response.getWriter().append(jsonStrign);
+					break;
+				}
+				case "saveSettings" : {
+					String dbUsername = request.getParameter("dbUsername");
+					String dbPassword = request.getParameter("dbPassword");
+					String jdbcUrl = request.getParameter("jdbcUrl");
+					String allowedTimeFrom = request.getParameter("allowedTimeFrom");
+					String allowedTimeTo = request.getParameter("allowedTimeTo");
+					String sqlAllowedPerUser = request.getParameter("sqlAllowedPerUser");
+					String userMaxAllowed = request.getParameter("userMaxAllowed");
+					
+					try {
+					// populating all fields
+					Map<String, String> props = new HashMap<>();
+					for (Configs config : Configs.values()) {
+						props.put(Configs.key(config), Configs.value(config));
+					}
+
+					// updating form data
+					props.put("db.username", dbUsername);
+					props.put("db.password", dbPassword);
+					props.put("db.jdbcUrl", jdbcUrl);
+					props.put("app.time.allowed.from", allowedTimeFrom);
+					props.put("app.time.allowed.to", allowedTimeTo);
+					props.put("app.sql.allowedPerUser", sqlAllowedPerUser);
+					props.put("app.user.maxAllowed", userMaxAllowed);
+
+					System.out.println(props);
+
+					StringBuffer buffer = new StringBuffer();
+					for (Entry<String, String> entry : props.entrySet()) {
+						buffer.append(entry.getKey() + "=" + entry.getValue());
+						buffer.append("\n");
+					}
+
+					response.setContentType("application/json");
+					String file = Configs.value(Configs.APP_CONFIG_FILE);
+					Files.write(Paths.get(file), buffer.toString().getBytes(), StandardOpenOption.TRUNCATE_EXISTING);
+						response.getWriter().append(JsonUtil.Builder.newBuilder().property("status", "success").property("message", "Details saved successfully").build());
+					} catch(Exception e) {
+						response.getWriter().append(JsonUtil.Builder.newBuilder().property("status", "error").property("message", "Problem is occurred during processing").build());	
+					}
+					
+					
 					break;
 				}
 			}

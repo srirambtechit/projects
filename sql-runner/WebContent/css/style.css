@@ -50,18 +50,14 @@ a {
 }
 
 .iwr-content-wrap {
-	width: 1000px;
+	width: 1100px;
 	height: 700px;
 	margin: 50px auto;
+	padding: 0px 50px 50px 50px;
 	background: rgba(40, 57, 101, .8);
-	box-shadow: 0 12px 15px 0 rgba(0, 0, 0, .24), 0 17px 50px 0
-		rgba(0, 0, 0, .19);
+	box-shadow: 0 12px 15px 0 rgba(0, 0, 0, .24), 0 17px 50px 0 rgba(0, 0, 0, .19);
 }
 
-.iwr-form-panel {
-	width: 100%;
-	/* padding: 30px; */
-}
 
 .iwr-form-panel .sign-in {
 	display: none;
@@ -74,21 +70,23 @@ a {
 .iwr-form-panel .tab {
 	font-size: 22px;
 	margin-right: 15px;
+	margin-top: 20px;
 	padding-bottom: 5px;
 	margin: 0 15px 10px 0;
 	display: inline-block;
 	border-bottom: 2px solid transparent;
 	position: absolute;
-	top: 138px;
+	top: 140px;
 }
 
 .iwr-form-panel .sign-in:checked+.tab {
 	color: #fff;
 	border-color: #1161ee;
-	margin-top: 20px;
+	margin-top: 25px;
 }
 
 .iwr-ui-form {
+	width: 1000px;
 	min-height: 345px;
 	position: absolute;
 	top: 193px;
@@ -165,10 +163,11 @@ input:focus, select:focus, textarea:focus, button:focus {
 }
 
 .menu {
-	float: right;
 	color: #ffff00;
-	position: relative;
-	top: 40px;
+	padding: 10px;
+}
+
+.menu a {
 }
 
 .menu a:hover {
@@ -186,9 +185,9 @@ div .clear {
 
 /*Error, Success Message style*/
 .notify {
-	border: 1px solid;
 	border-radius: 10px;
 	font: 600 11px/16px 'Open Sans', sans-serif;
+	height: 36px;
 	padding: 10px;
 	margin: 10px 0px;
 	cursor: default;
@@ -207,13 +206,13 @@ div .clear {
 	color: green;
 }
 
-.notify-red:before {
+/* .notify-red:before {
 	content: "Error! ";
 }
 
 .notify-green:before {
 	content: "Info! ";
-}
+} */
 
 .hide {
 	display: none;
@@ -226,12 +225,11 @@ div .clear {
 
 /* dataTable style */
 div.dataTables_scrollBody {
-	/* 	max-height: 397px !important; */
 	max-height: 367px !important;
 }
 
-table.dataTable {
-	width: 940px;
+table.dataTable, div.dataTables_scrollHeadInner, .dataTables_scrollHeadInner table {
+	width: 100% !important;
 }
 
 table.dataTable thead tr[role='row'] {
@@ -258,3 +256,11 @@ table.dataTable, .dataTables_info, .dataTables_filter {
 .dataTables_info, .dataTables_scrollHeadInner, .dataTables_filter {
 	color: #fff !important;
 }
+
+#serverRestartBtn {
+	width: 150px;
+	padding: 3px;
+}
+
+
+

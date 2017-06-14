@@ -11,10 +11,10 @@
 	<!-- <welcome-file-list> -->
 	<!-- <welcome-file>ui?page=login</welcome-file> -->
 	<!-- </welcome-file-list> -->
-	<error-page>
-		<error-code>404</error-code>
-		<location>/appErrorHandler</location>
-	</error-page>
+	<!-- <error-page> -->
+	<!-- <error-code>404</error-code> -->
+	<!-- <location>/appErrorHandler</location> -->
+	<!-- </error-page> -->
 	<!-- <error-page> -->
 	<!-- <exception-type>java.lang.Throwable</exception-type> -->
 	<!-- <location>/appErrorHandler</location> -->

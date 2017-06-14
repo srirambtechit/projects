@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Day 001 Login Form</title>
+<title>SqlRunner - User</title>
 <link rel="stylesheet" href="css/jquery.dataTables.min.css" />
 <link rel="stylesheet" href="css/scroller.dataTables.min.css" />
 <link rel="stylesheet" href="css/select.dataTables.min.css" />
@@ -44,7 +44,6 @@
 										+ "&role=" + role,
 								method : "POST",
 								success : function(response, status, obj) {
-									alert('status : ' + status);
 									if (status == "success") {
 
 										dTable.destroy();
@@ -85,17 +84,19 @@
 </head>
 
 <body>
+	
 	<div class='bg-overlay'>
 		<div class="iwr-content-wrap">
+		
+			<div class="menu">
+				<a href="logout?action=doLogout">Log off</a>
+				&nbsp;
+				<a href="ui?page=settings">Settings</a>
+			</div>
+		
 			<div class="iwr-form-panel">
 
 				<div class="notify hide notify-red"></div>
-			
-				<div class="menu">
-					<a href="logout?action=doLogout">Settings</a>
-					&nbsp;
-					<a href="logout?action=doLogout">Log off</a>
-				</div>
 
 				<input id="tab-1" type="radio" name="tab" class="sign-in" checked><label
 					for="tab-1" class="tab">User Management</label>
@@ -116,8 +117,10 @@
 					</div>
 
 					<div class="float-left" style="line-height: 50px;">
-						<input type="radio" name="role" value="admin" class="input mid-size" /> Admin 
-						<input type="radio" name="role" value="user" class="input mid-size" /> User
+						<input type="radio" id="admin_id" name="role" value="admin" class="input mid-size" /> 
+						<label for="admin_id">Admin</label> 
+						<input type="radio" id="user_id" name="role" value="user" class="input mid-size" /> 
+						<label for="user_id">User</label>
 					</div>
 
 					<div class="float-left">

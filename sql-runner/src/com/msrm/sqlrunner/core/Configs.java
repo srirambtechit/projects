@@ -16,10 +16,20 @@ public enum Configs {
 	APP_USER_DB_FILE("app.user.db"), 
 	APP_SQL_ALLOWED_PER_USER("app.sql.allowedPerUser"), 
 	APP_ALLOWED_TIME_FROM("app.time.allowed.from"), 
-	APP_ALLOWED_TIME_TO("app.time.allowed.to");
+	APP_ALLOWED_TIME_TO("app.time.allowed.to"),
+	APP_CONFIG_FILE("app.config.file");
 	//@formatter:on
 
-	private static final Configurations configs = new Configurations();
+	private static Configurations configs;
+	private static Configuration config;
+
+	static {
+		configs = new Configurations();
+		try {
+			config = configs.properties(new File("config.properties"));
+		} catch (ConfigurationException cex) {
+		}
+	}
 
 	private String key;
 
@@ -27,13 +37,12 @@ public enum Configs {
 		this.key = key;
 	}
 
-	public static String get(Configs cfg) {
-		try {
-			Configuration config = configs.properties(new File("config.properties"));
-			return config.getString(cfg.key);
-		} catch (ConfigurationException cex) {
-			return "";
-		}
+	public static String key(Configs cfg) {
+		return cfg.key;
+	}
+
+	public static String value(Configs cfg) {
+		return config.getString(cfg.key);
 	}
 
 	public static Configurations getConfig() {

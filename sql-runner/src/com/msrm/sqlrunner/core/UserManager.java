@@ -21,7 +21,7 @@ public class UserManager {
 	private static Logger logger = Logger.getLogger(UserManager.class);
 
 	public static boolean add(User user) throws SqlRunnerException {
-		String userFile = Configs.get(Configs.APP_USER_DB_FILE);
+		String userFile = Configs.value(Configs.APP_USER_DB_FILE);
 		try {
 			List<String> lines = new ArrayList<>();
 			if (userExists(user.getUsername())) {
@@ -42,7 +42,7 @@ public class UserManager {
 	}
 
 	public static void edit(User user) throws SqlRunnerException {
-		String userFile = Configs.get(Configs.APP_USER_DB_FILE);
+		String userFile = Configs.value(Configs.APP_USER_DB_FILE);
 		try {
 			List<String> lines = Files.readAllLines(Paths.get(userFile));
 			int index = 0;
@@ -60,7 +60,7 @@ public class UserManager {
 	}
 
 	public static void remove(User user) throws SqlRunnerException {
-		String userFile = Configs.get(Configs.APP_USER_DB_FILE);
+		String userFile = Configs.value(Configs.APP_USER_DB_FILE);
 		try {
 			List<String> lines = Files.readAllLines(Paths.get(userFile));
 			int index = 0;
@@ -79,7 +79,7 @@ public class UserManager {
 	}
 
 	public static List<User> selectAll() throws SqlRunnerException {
-		String userFile = Configs.get(Configs.APP_USER_DB_FILE);
+		String userFile = Configs.value(Configs.APP_USER_DB_FILE);
 		try {
 			List<User> users = new ArrayList<>();
 			Files.readAllLines(Paths.get(userFile)).stream().forEach(s -> {
