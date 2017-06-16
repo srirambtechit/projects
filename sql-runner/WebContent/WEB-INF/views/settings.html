@@ -50,7 +50,7 @@
   				}
   	 		});
   		});
-  		
+
   		function validateForm() {
   			validity = true;
   			errorMessage = "";
@@ -89,54 +89,62 @@
 			
 			<div class="notify hide"></div> 
 
-			<input id="tab-1" type="radio" name="tab" class="sign-in" checked><label for="tab-1" class="tab">Settings</label>
+			<input id="tab-1" type="radio" name="tab" class="sign-in" checked /><label for="tab-1" class="tab">Settings</label>
 			
 			<div class="iwr-ui-form">
 				<form method="post" id="settingsForm">
 					<div class="float-left">
 						<div class="group">
 							<label for="user">Username</label>
-							<input id="user" name="dbUsername" type="text" class="input" placeholder="Database username">
+							<input id="user" name="dbUsername" type="text" class="input" placeholder="Database username" />
 						</div>
 						<div class="group">
 							<label for="pass">Password</label>
-							<input id="pass" name="dbPassword" type="password" class="input" data-type="password" placeholder="Database password">
+							<input id="pass" name="dbPassword" type="password" class="input" data-type="password" placeholder="Database password" />
 						</div>
 						<div class="group">
 							<label for="repeatpass">Confirm password</label>
-							<input id="repeatpass" name="dbPassword" type="password" class="input" data-type="password" placeholder="Repeat database password">
+							<input id="repeatpass" name="dbPassword" type="password" class="input" data-type="password" placeholder="Repeat database password" />
 						</div>
 						<div class="group">
 							<label for="jdbc-url">JDBC Url</label>
-							<input id="jdbc-url" name="jdbcUrl" type="text" class="input" placeholder="Jdbc connection url">
+							<input id="jdbc-url" name="jdbcUrl" type="text" class="input" placeholder="Jdbc connection url" />
 						</div>
 					</div>
 	
 					<div class="float-left">
 						<div class="group">
 							<label for="pass">Maximum allowed user</label>
-							<input id="allowed-user" name="userMaxAllowed" type="text" class="input" placeholder="Maximum allowed user">
+							<input id="allowed-user" name="userMaxAllowed" type="text" class="input" placeholder="Maximum allowed user" />
 						</div>
 						<div class="group">
 							<label for="pass">Allowed execution of query per user</label>
-							<input id="exec-user"  name="sqlAllowedPerUser" type="text" class="input" placeholder="Allowed execution of query per user">
+							<input id="exec-user"  name="sqlAllowedPerUser" type="text" class="input" placeholder="Allowed execution of query per user" />
 						</div>
 						<div class="group">
 							<label for="pass">Application availability 'from' timing</label>
-							<input id="from-time" name="allowedTimeFrom" type="text" class="input" placeholder="Application availability 'from' timing">
+							<input id="from-time" name="allowedTimeFrom" type="text" class="input" placeholder="Application availability 'from' timing" />
 						</div>
 						<div class="group">
 							<label for="pass">Application availability 'to' timing</label>
-							<input id="to-time" name="allowedTimeTo" type="text" class="input" placeholder="Application availability 'to' timing">
+							<input id="to-time" name="allowedTimeTo" type="text" class="input" placeholder="Application availability 'to' timing" />
 						</div>
 						<div class="group">
-							<input type="submit" id="saveBtn" class="button" value="Save">
+							<label for="catalina-home">CATALINA HOME</label>
+							<input id="catalina-home" name="catalinaHome" type="text" class="input" placeholder="Tomcat Catalina home" />
+						</div>
+						<div class="group">
+							<input type="submit" id="saveBtn" class="button" value="Save" />
 						</div>
 					</div>
-					<div class="float-left">
-						<button id="serverRestartBtn">Restart Tomcat Server</button>
-					</div>
 				</form>
+				
+				<div class="float-left">
+					<form action="data" method="POST">
+						<input type="hidden" name="action" value="restartServer" />
+						<button id="serverRestartBtn">Restart Tomcat Server</button>
+					</form>
+				</div>
 			</div>
 		</div>
 	</div>

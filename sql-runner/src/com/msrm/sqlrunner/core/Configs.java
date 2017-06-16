@@ -17,7 +17,8 @@ public enum Configs {
 	APP_SQL_ALLOWED_PER_USER("app.sql.allowedPerUser"), 
 	APP_ALLOWED_TIME_FROM("app.time.allowed.from"), 
 	APP_ALLOWED_TIME_TO("app.time.allowed.to"),
-	APP_CONFIG_FILE("app.config.file");
+	APP_CONFIG_FILE("app.config.file"),
+	TOMCAT_CATALINA_HOME("tomcat.catalina.home");
 	//@formatter:on
 
 	private static Configurations configs;

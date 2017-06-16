@@ -1,5 +1,6 @@
 package com.msrm.sqlrunner.servlet;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -19,6 +20,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 
 import com.msrm.sqlrunner.beans.SqlResult;
 import com.msrm.sqlrunner.beans.User;
@@ -28,8 +32,10 @@ import com.msrm.sqlrunner.core.SqlRunner;
 import com.msrm.sqlrunner.core.UserManager;
 import com.msrm.sqlrunner.exception.ExceptionUtil;
 import com.msrm.sqlrunner.exception.SqlRunnerException;
+import com.msrm.sqlrunner.util.ExcelUtil;
 import com.msrm.sqlrunner.util.JsonUtil;
 import com.msrm.sqlrunner.util.JsonUtil.ArrayBuilder;
+import com.msrm.sqlrunner.util.TomcatUtil;
 
 /**
  * Servlet implementation class LoginServlet
@@ -139,6 +145,48 @@ public class BusinessFlowController extends HttpServlet {
 					}
 					break;
 				}
+				case "excelReport" : {
+
+					System.out.println("Excel report generation");
+					String sql = request.getParameter("query");
+					User user = (User) request.getSession(false).getAttribute("user");
+					try {
+						SqlResult sqlResult = SqlRunner.run(user, sql);
+
+						String fileName = "query-output.xlsx";
+						Workbook wb = ExcelUtil.createWorkbook(fileName);
+
+						Sheet sheet1 = wb.createSheet();
+
+						// creating a column row in spreadsheet
+						int rowId = 0;
+						Row row = sheet1.createRow(rowId++);
+						List<String> columnData = sqlResult.getColumns();
+						for (int i = 0; i < columnData.size(); i++) {
+							row.createCell(i).setCellValue(columnData.get(i));
+						}
+
+						// creating a data row in spreadsheet
+						List<List<String>> rowsData = sqlResult.getRows();
+						for (List<String> rowData : rowsData) {
+							Row newRow = sheet1.createRow(rowId++);
+							for (int i = 0; i < rowData.size(); i++) {
+								newRow.createCell(i).setCellValue(rowData.get(i));
+							}
+						}
+						
+						response.setContentType("application/vnd.ms-excel");
+						response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
+						wb.write(response.getOutputStream());
+
+					} catch (SqlRunnerException e) {
+						// SQL exception occurred due to whatever reason
+						response.setContentType("application/json");
+						System.out.println("excelReport Err : " + e.getMessage());
+						response.getWriter().append(e.getMessage());
+					}
+					break;
+				}
 				case "doLogout" : {
 					HttpSession session = request.getSession(false);
 					session.removeAttribute("user");
@@ -192,6 +240,7 @@ public class BusinessFlowController extends HttpServlet {
 						.property("allowedTimeTo", Configs.value(Configs.APP_ALLOWED_TIME_TO))
 						.property("sqlAllowedPerUser", Configs.value(Configs.APP_SQL_ALLOWED_PER_USER))
 						.property("userMaxAllowed", Configs.value(Configs.APP_USER_MAXALLOWED))
+						.property("catalinaHome", Configs.value(Configs.TOMCAT_CATALINA_HOME))
 						.build();
 					//@formatter:on
 					response.setContentType("application/json");
@@ -206,40 +255,52 @@ public class BusinessFlowController extends HttpServlet {
 					String allowedTimeTo = request.getParameter("allowedTimeTo");
 					String sqlAllowedPerUser = request.getParameter("sqlAllowedPerUser");
 					String userMaxAllowed = request.getParameter("userMaxAllowed");
-					
+					String catalinaHome = request.getParameter("catalinaHome");
+
 					try {
-					// populating all fields
-					Map<String, String> props = new HashMap<>();
-					for (Configs config : Configs.values()) {
-						props.put(Configs.key(config), Configs.value(config));
-					}
+						// populating all fields
+						Map<String, String> props = new HashMap<>();
+						for (Configs config : Configs.values()) {
+							props.put(Configs.key(config), Configs.value(config));
+						}
 
-					// updating form data
-					props.put("db.username", dbUsername);
-					props.put("db.password", dbPassword);
-					props.put("db.jdbcUrl", jdbcUrl);
-					props.put("app.time.allowed.from", allowedTimeFrom);
-					props.put("app.time.allowed.to", allowedTimeTo);
-					props.put("app.sql.allowedPerUser", sqlAllowedPerUser);
-					props.put("app.user.maxAllowed", userMaxAllowed);
+						// updating form data
+						props.put("db.username", dbUsername);
+						props.put("db.password", dbPassword);
+						props.put("db.jdbcUrl", jdbcUrl);
+						props.put("app.time.allowed.from", allowedTimeFrom);
+						props.put("app.time.allowed.to", allowedTimeTo);
+						props.put("app.sql.allowedPerUser", sqlAllowedPerUser);
+						props.put("app.user.maxAllowed", userMaxAllowed);
+						props.put("tomcat.catalina.home", catalinaHome);
 
-					System.out.println(props);
+						System.out.println(props);
 
-					StringBuffer buffer = new StringBuffer();
-					for (Entry<String, String> entry : props.entrySet()) {
-						buffer.append(entry.getKey() + "=" + entry.getValue());
-						buffer.append("\n");
-					}
+						StringBuffer buffer = new StringBuffer();
+						for (Entry<String, String> entry : props.entrySet()) {
+							buffer.append(entry.getKey() + "=" + entry.getValue());
+							buffer.append("\n");
+						}
 
-					response.setContentType("application/json");
-					String file = Configs.value(Configs.APP_CONFIG_FILE);
-					Files.write(Paths.get(file), buffer.toString().getBytes(), StandardOpenOption.TRUNCATE_EXISTING);
+						response.setContentType("application/json");
+						String file = Configs.value(Configs.APP_CONFIG_FILE);
+						Files.write(Paths.get(file), buffer.toString().getBytes(), StandardOpenOption.TRUNCATE_EXISTING);
 						response.getWriter().append(JsonUtil.Builder.newBuilder().property("status", "success").property("message", "Details saved successfully").build());
-					} catch(Exception e) {
-						response.getWriter().append(JsonUtil.Builder.newBuilder().property("status", "error").property("message", "Problem is occurred during processing").build());	
+					} catch (Exception e) {
+						response.getWriter().append(JsonUtil.Builder.newBuilder().property("status", "error").property("message", "Problem is occurred during processing").build());
 					}
-					
-					
+					break;
+				}
+				case "restartServer" : {
+					// restarting Tomcat server
+					String catalinaHome = Configs.value(Configs.TOMCAT_CATALINA_HOME);
+					boolean restarted = TomcatUtil.restartTomcat(catalinaHome);
+
+					response.setContentType("text/html");
+					if (restarted)
+						response.getWriter().append("Tomcat restarted<br/><a href='ui?page=login'>Login</a>");
+					else
+						response.getWriter().append("Tomcat is not restarted<br/><a href='ui?page=login'>Login</a>");
 					break;
 				}
 			}

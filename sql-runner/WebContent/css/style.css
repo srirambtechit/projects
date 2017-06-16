@@ -258,9 +258,17 @@ table.dataTable, .dataTables_info, .dataTables_filter {
 }
 
 #serverRestartBtn {
-	width: 150px;
-	padding: 3px;
+	height: 50px;
+    border-radius: 5px;
+    width: 150px;
+    border-color: #fff;
+    background-color: orangered;
+    color: #fff;
+    font-size: smaller;
 }
 
-
+#serverRestartBtn:hover {
+	cursor: pointer;
+	color: #000;
+}
 

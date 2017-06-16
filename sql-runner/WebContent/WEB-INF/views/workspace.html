@@ -14,12 +14,21 @@
 <script type="text/javascript" src="js/dataTables.select.min.js"></script>
 <script type="text/javascript">
 	$(document).ready(function() {
+		
 		$("#executeBtn").click(function() {
 			
-			$("#queryResultDiv").hide();
+			var sql = $("#query").val();
 			
+			if (!validateForm(sql)) {
+				$(".notify").removeClass('hide').addClass('show');
+				return false;
+			} else {
+				$('.notify').addClass('hide').removeClass('show');
+			}
+			
+			$("#queryResultDiv").hide();
 			$.ajax({
-				url : "data?action=executeQuery&query=" + $("#query").val(),
+				url : "data?action=executeQuery&query=" + sql,
 				method : "POST",
 				success : function(response, httpStatus, obj) {
 					
@@ -69,6 +78,56 @@
 				}
 			});
 		});
+		
+		$("#excelDownloadLink").click(function(event) {
+			event.preventDefault();
+			
+			var sql = $("#query").val();
+			
+			if (!validateForm(sql)) {
+				$(".notify").removeClass('hide').addClass('show');
+				return false;
+			} else {
+				$('.notify').addClass('hide').removeClass('show');
+			}
+			
+			submitForm('data', '{"query" : "'+sql+'", "action" : "excelReport"}', 'POST');
+			
+		});
+		
+		function validateForm(sql) {
+			if (sql == '') {
+				$('.notify').text('Please provide SQL');
+				return false;
+			}
+			return true;
+		}
+		
+		function submitForm(path, params, method) {
+		    method = method || "post"; 
+		    
+		    var form = document.createElement("form");
+		    form.setAttribute("method", method);
+		    form.setAttribute("action", path);
+
+		    //Move the submit function to another variable
+		    //so that it doesn't get overwritten.
+		    form._submit_function_ = form.submit;
+		    
+		    var jsonObj = jQuery.parseJSON(params);
+		    $.each(jsonObj, function(key, value){
+		    	var hiddenField = document.createElement("input");
+	            hiddenField.setAttribute("type", "hidden");
+	            hiddenField.setAttribute("name", key);
+	            hiddenField.setAttribute("value", value);
+
+	            form.appendChild(hiddenField);
+		    });
+		    
+		    document.body.appendChild(form);
+		    form._submit_function_();
+		}
+		
 	});
 </script>
 </head>
@@ -99,6 +158,11 @@
 					
 					<div id="queryResultDiv">
 					</div>
+					
+					<div class="group">
+						<a id="excelDownloadLink" href="#">Download as Excel</a>
+					</div>
+					
 				</div>
 			</div>
 		</div>
