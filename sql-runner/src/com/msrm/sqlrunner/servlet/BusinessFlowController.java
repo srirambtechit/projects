@@ -1,6 +1,5 @@
 package com.msrm.sqlrunner.servlet;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -20,9 +19,20 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFFont;
+import org.apache.poi.hssf.usermodel.HSSFRichTextString;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.xssf.usermodel.XSSFColor;
+import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.xssf.usermodel.XSSFRichTextString;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.msrm.sqlrunner.beans.SqlResult;
 import com.msrm.sqlrunner.beans.User;
@@ -32,7 +42,6 @@ import com.msrm.sqlrunner.core.SqlRunner;
 import com.msrm.sqlrunner.core.UserManager;
 import com.msrm.sqlrunner.exception.ExceptionUtil;
 import com.msrm.sqlrunner.exception.SqlRunnerException;
-import com.msrm.sqlrunner.util.ExcelUtil;
 import com.msrm.sqlrunner.util.JsonUtil;
 import com.msrm.sqlrunner.util.JsonUtil.ArrayBuilder;
 import com.msrm.sqlrunner.util.TomcatUtil;
@@ -152,33 +161,18 @@ public class BusinessFlowController extends HttpServlet {
 					User user = (User) request.getSession(false).getAttribute("user");
 					try {
 						SqlResult sqlResult = SqlRunner.run(user, sql);
+						String fileName = request.getParameter("excelFile");
 
-						String fileName = "query-output.xlsx";
-						Workbook wb = ExcelUtil.createWorkbook(fileName);
-
-						Sheet sheet1 = wb.createSheet();
-
-						// creating a column row in spreadsheet
-						int rowId = 0;
-						Row row = sheet1.createRow(rowId++);
-						List<String> columnData = sqlResult.getColumns();
-						for (int i = 0; i < columnData.size(); i++) {
-							row.createCell(i).setCellValue(columnData.get(i));
+						Workbook wb = null;
+						if (fileName.toLowerCase().endsWith("xlsx")) {
+							wb = createXSSFExcel(fileName, sqlResult);
+						} else if (fileName.toLowerCase().endsWith("xls")) {
+							wb = createHSSFExcel(fileName, sqlResult);
 						}
 
-						// creating a data row in spreadsheet
-						List<List<String>> rowsData = sqlResult.getRows();
-						for (List<String> rowData : rowsData) {
-							Row newRow = sheet1.createRow(rowId++);
-							for (int i = 0; i < rowData.size(); i++) {
-								newRow.createCell(i).setCellValue(rowData.get(i));
-							}
-						}
-						
 						response.setContentType("application/vnd.ms-excel");
 						response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
 						wb.write(response.getOutputStream());
-
 					} catch (SqlRunnerException e) {
 						// SQL exception occurred due to whatever reason
 						response.setContentType("application/json");
@@ -305,6 +299,72 @@ public class BusinessFlowController extends HttpServlet {
 				}
 			}
 		}
+	}
+
+	protected Workbook createXSSFExcel(String fileName, SqlResult sqlResult) {
+		Workbook wb = new XSSFWorkbook();
+		Sheet sheet1 = wb.createSheet();
+
+		// XSSF Example
+		XSSFFont font = (XSSFFont) wb.createFont();
+		font.setBold(true);
+		font.setColor(new XSSFColor(new java.awt.Color(255, 0, 0)));
+		
+		XSSFCellStyle style = (XSSFCellStyle) wb.createCellStyle();
+	    style.setFillForegroundColor(new XSSFColor(new java.awt.Color(128, 0, 128)));
+	    
+		// creating a column row in spreadsheet
+		int rowId = 0;
+		Row row = sheet1.createRow(rowId++);
+		List<String> columnData = sqlResult.getColumns();
+		for (int i = 0; i < columnData.size(); i++) {
+			XSSFCell cell = (XSSFCell) row.createCell(i);
+			XSSFRichTextString rt = new XSSFRichTextString(columnData.get(i));
+			rt.applyFont(font);
+			cell.setCellValue(rt);
+			cell.setCellStyle(style);
+		}
+
+		// creating a data row in spreadsheet
+		List<List<String>> rowsData = sqlResult.getRows();
+		for (List<String> rowData : rowsData) {
+			Row newRow = sheet1.createRow(rowId++);
+			for (int i = 0; i < rowData.size(); i++) {
+				newRow.createCell(i).setCellValue(rowData.get(i));
+			}
+		}
+		return wb;
+	}
+
+	protected Workbook createHSSFExcel(String fileName, SqlResult sqlResult) {
+		Workbook wb = new HSSFWorkbook();
+		Sheet sheet1 = wb.createSheet();
+
+		// XSSF Example
+		HSSFFont font = (HSSFFont) wb.createFont();
+		font.setBold(true);
+		font.setColor(HSSFColor.HSSFColorPredefined.AQUA.getIndex());
+
+		// creating a column row in spreadsheet
+		int rowId = 0;
+		Row row = sheet1.createRow(rowId++);
+		List<String> columnData = sqlResult.getColumns();
+		for (int i = 0; i < columnData.size(); i++) {
+			HSSFCell cell = (HSSFCell) row.createCell(i);
+			HSSFRichTextString rt = new HSSFRichTextString(columnData.get(i));
+			rt.applyFont(0, 10, font);
+			cell.setCellValue(rt);
+		}
+
+		// creating a data row in spreadsheet
+		List<List<String>> rowsData = sqlResult.getRows();
+		for (List<String> rowData : rowsData) {
+			Row newRow = sheet1.createRow(rowId++);
+			for (int i = 0; i < rowData.size(); i++) {
+				newRow.createCell(i).setCellValue(rowData.get(i));
+			}
+		}
+		return wb;
 	}
 
 	private String fetchUser() {

@@ -6,8 +6,10 @@
 <link rel="stylesheet" href="css/jquery.dataTables.min.css" />
 <link rel="stylesheet" href="css/scroller.dataTables.min.css" />
 <link rel="stylesheet" href="css/select.dataTables.min.css" />
+<link rel="stylesheet" href="css/jquery-ui.css" />
 <link rel="stylesheet" href="css/style.css">
 <script type="text/javascript" src="js/jquery-1.12.4.js"></script>
+<script type="text/javascript" src="js/jquery-ui.js"></script>
 <script type="text/javascript" src="js/jquery.base64.js"></script>
 <script type="text/javascript" src="js/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="js/dataTables.scroller.min.js"></script>
@@ -91,7 +93,24 @@
 				$('.notify').addClass('hide').removeClass('show');
 			}
 			
-			submitForm('data', '{"query" : "'+sql+'", "action" : "excelReport"}', 'POST');
+			$('<form><span id="dialogError"></span><br/>Excel ouput file : <input type="text" style="z-index:10000" id="excelFileName"><br/></form>').dialog({
+				  modal: true,
+				  title : "Output File Name",
+				  buttons: {
+				    'OK': function () {
+				    	var excelFile = $('#excelFileName').val();
+				    	if(!(excelFile.endsWith('.xls') || excelFile.endsWith('.xlsx'))) {
+				    		$("#dialogError").text("File extendsion should be either xls or xlsx");
+				    		return false;
+				    	}
+						submitForm('data', '{"query" : "' + sql + '", "action" : "excelReport", "excelFile" : "' + excelFile + '"}', 'POST');
+				     	$(this).dialog('close');
+				    },
+				    'Cancel': function () {
+				      	$(this).dialog('close');
+				    }
+				  }
+			});
 			
 		});
 		
@@ -156,11 +175,11 @@
 						</div>
 					</div>
 					
-					<div id="queryResultDiv">
-					</div>
-					
 					<div class="group">
 						<a id="excelDownloadLink" href="#">Download as Excel</a>
+					</div>
+					
+					<div id="queryResultDiv">
 					</div>
 					
 				</div>
