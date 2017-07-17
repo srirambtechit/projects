@@ -27,13 +27,13 @@ import org.apache.poi.ss.usermodel.Workbook;
  * Servlet implementation class ExceuteQuery
  */
 @WebServlet("/execute")
-public class ExceuteQuery extends HttpServlet {
+public class ExecuteQuery extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
-	public ExceuteQuery() {
+	public ExecuteQuery() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
@@ -69,7 +69,7 @@ public class ExceuteQuery extends HttpServlet {
 			seqNo = seqNo == 0 ? 1 : seqNo + 1;
 
 			System.out.println("Query file : " + queryFile);
-			Files.write(Paths.get(queryFile), (seqNo + ";" + sql).getBytes(), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+			Files.write(Paths.get(queryFile), (seqNo + ";" + sql + "\n").getBytes(), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
 
 			String fileName = "report-" + seqNo + ".xls";
 			Workbook wb = createHSSFExcel(sqlResult);
