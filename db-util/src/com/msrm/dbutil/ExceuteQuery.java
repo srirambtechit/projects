@@ -2,8 +2,10 @@ package com.msrm.dbutil;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -48,15 +50,29 @@ public class ExceuteQuery extends HttpServlet {
 		try {
 			SqlResult sqlResult = SqlRunner.run(user, sql);
 			String reportPath = Props.value("report.path");
-			String fileName = reportPath + File.separator;
+			String queryFile = reportPath + File.separator + "query.sql";
+			System.out.println("ReportPath : " + reportPath);
 
-			FileUtil.newFileName(reportPath);
-			
-			
-			Files.write(Paths.get(reportPath + File.separator + "query.sql"), bytes, options)
-			Workbook wb = createHSSFExcel(fileName, sqlResult);
-			
-			
+			int seqNo = 0;
+			if (Paths.get(queryFile).toFile().exists()) {
+				System.out.println("If-Block-Start");
+				//@formatter:off
+				seqNo = Files.lines(Paths.get(queryFile), StandardCharsets.UTF_8)
+						.map(s -> s.substring(0, s.indexOf(";")))
+						.mapToInt(Integer::parseInt)
+						.max()
+						.orElse(0);
+				System.out.println("If-Block-End");
+				//@formatter:on
+			}
+
+			seqNo = seqNo == 0 ? 1 : seqNo + 1;
+
+			System.out.println("Query file : " + queryFile);
+			Files.write(Paths.get(queryFile), (seqNo + ";" + sql).getBytes(), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+
+			String fileName = "report-" + seqNo + ".xls";
+			Workbook wb = createHSSFExcel(sqlResult);
 
 			response.setContentType("application/vnd.ms-excel");
 			response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
@@ -78,33 +94,37 @@ public class ExceuteQuery extends HttpServlet {
 		doGet(request, response);
 	}
 
-	protected Workbook createHSSFExcel(String fileName, SqlResult sqlResult) {
+	protected Workbook createHSSFExcel(SqlResult sqlResult) {
 		Workbook wb = new HSSFWorkbook();
-		Sheet sheet1 = wb.createSheet();
+		try {
+			Sheet sheet1 = wb.createSheet();
 
-		// XSSF Example
-		HSSFFont font = (HSSFFont) wb.createFont();
-		font.setBold(true);
-		font.setColor(HSSFColor.HSSFColorPredefined.AQUA.getIndex());
+			// XSSF Example
+			HSSFFont font = (HSSFFont) wb.createFont();
+			font.setBold(true);
+			font.setColor(HSSFColor.HSSFColorPredefined.AQUA.getIndex());
 
-		// creating a column row in spreadsheet
-		int rowId = 0;
-		Row row = sheet1.createRow(rowId++);
-		List<String> columnData = sqlResult.getColumns();
-		for (int i = 0; i < columnData.size(); i++) {
-			HSSFCell cell = (HSSFCell) row.createCell(i);
-			HSSFRichTextString rt = new HSSFRichTextString(columnData.get(i));
-			rt.applyFont(0, 10, font);
-			cell.setCellValue(rt);
-		}
-
-		// creating a data row in spreadsheet
-		List<List<String>> rowsData = sqlResult.getRows();
-		for (List<String> rowData : rowsData) {
-			Row newRow = sheet1.createRow(rowId++);
-			for (int i = 0; i < rowData.size(); i++) {
-				newRow.createCell(i).setCellValue(rowData.get(i));
+			// creating a column row in spreadsheet
+			int rowId = 0;
+			Row row = sheet1.createRow(rowId++);
+			List<String> columnData = sqlResult.getColumns();
+			for (int i = 0; i < columnData.size(); i++) {
+				HSSFCell cell = (HSSFCell) row.createCell(i);
+				HSSFRichTextString rt = new HSSFRichTextString(columnData.get(i));
+				rt.applyFont(0, columnData.get(i).length(), font);
+				cell.setCellValue(rt);
 			}
+
+			// creating a data row in spreadsheet
+			List<List<String>> rowsData = sqlResult.getRows();
+			for (List<String> rowData : rowsData) {
+				Row newRow = sheet1.createRow(rowId++);
+				for (int i = 0; i < rowData.size(); i++) {
+					newRow.createCell(i).setCellValue(rowData.get(i));
+				}
+			}
+		} catch (Throwable t) {
+			t.printStackTrace();
 		}
 		return wb;
 	}

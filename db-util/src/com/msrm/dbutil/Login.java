@@ -29,7 +29,7 @@ public class Login extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-		String user = request.getParameter("uesrname");
+		String user = request.getParameter("username");
 		String password = request.getParameter("password");
 		if (Props.value("user1.name").equals(user) && Props.value("user1.password").equals(password)) {
 			HttpSession session = request.getSession(true);

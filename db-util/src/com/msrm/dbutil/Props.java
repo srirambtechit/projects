@@ -18,6 +18,7 @@ public class Props {
 	}
 
 	public static String value(String key) {
+		System.out.println("Key : " + key + "; Value : " + INSTANCE.prop.getProperty(key));
 		return INSTANCE.prop.getProperty(key);
 	}
 

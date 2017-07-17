@@ -23,11 +23,12 @@ public class SqlTask {
 
 	public SqlResult call() {
 		System.out.println("Query is running on DB");
+		System.out.println("Query: " + sql);
 		SqlResult sqlResult = new SqlResult();
 		try {
 			Context initCtx = new InitialContext();
 			Context envCtx = (Context) initCtx.lookup("java:comp/env");
-			DataSource ds = (DataSource) envCtx.lookup("jdbc/niit");
+			DataSource ds = (DataSource) envCtx.lookup("jdbc/mysqldb");
 
 			try (
 					// Connection con =

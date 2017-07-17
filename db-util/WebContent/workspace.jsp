@@ -12,7 +12,7 @@
 <body>
 <div id="page">
 	<form action="execute" method="post">
-		<textarea class="txarea" id="query" rows="5" cols="105"></textarea>
+		<textarea name="query" rows="5" cols="105"></textarea>
 		<input type="submit" value="Execute"/>
 	</form>
 </div>
