@@ -73,6 +73,10 @@ public class Employee {
 					sex[(int) (sex.length * Math.random())], 
 					cities[(int)(cities.length * Math.random())]));
 		}
+
+		// Purposely adding 2 duplicate objects
+		result.add(result.get((int) (count * Math.random())));
+		result.add(result.get((int) (count * Math.random())));
 		//@formatter:on
 
 		return result;
