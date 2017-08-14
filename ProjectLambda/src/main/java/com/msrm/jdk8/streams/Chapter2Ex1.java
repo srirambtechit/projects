@@ -9,7 +9,7 @@ import java.util.List;
 
 public class Chapter2Ex1 {
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException {
         String contents = new String(Files.readAllBytes(Paths.get("alice.txt")),
                 StandardCharsets.UTF_8); // Read file into string
         List<String> words = Arrays.asList(contents.split("[\\P{L}]+"));
@@ -29,21 +29,22 @@ public class Chapter2Ex1 {
             new Thread(r[i]).start();
         }
 
+        // Explicitly blocking IO for Main thread
+        while (true) {
+            if (running == processors) break;
+        }
+
         int summer = 0;
         for (int i = 0; i < processors; i++) {
-            synchronized (r[i]) {
-                try {
-                    System.out.println("Main --> is awaiting for data");
-                    r[i].wait();
-                    summer += r[i].count();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-                System.out.println("Main --> Count is " + summer);
-            }
+            summer += r[i].count();
+            System.out.println("Main --> Count is " + summer);
         }
+
+        System.out.println("Total words are " + summer);
+        System.out.println(Arrays.toString(r));
     }
+
+    private static int running = 0;
 
     private static class WordCounter implements Runnable {
 
@@ -71,12 +72,16 @@ public class Chapter2Ex1 {
             }
             System.out.printf("WordCounter --> %s's count is %d%n",
                     Thread.currentThread().getName(), c);
+            count = c;
             synchronized (this) {
-                count = c;
-                notifyAll();
+                running++;
             }
         }
 
-    }
+        @Override
+        public String toString() {
+            return "WordCounter [count=" + count + "]";
+        }
 
+    }
 }
