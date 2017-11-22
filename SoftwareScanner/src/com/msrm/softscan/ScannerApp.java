@@ -12,88 +12,104 @@ import java.util.List;
 
 public class ScannerApp {
 
-    private String inputFile;
-    private String outputFile;
-    private String searchString;
+	private String inputFile;
+	private String outputFile;
+	private String searchString;
+	private String binaryLocation;
+	private String softwareName;
+	private String softwareConfigFile;
 
-    public ScannerApp() {
-        // default value
-        this.searchString = "name=";
-    }
+	public ScannerApp() {
+		// default value
+		this.inputFile = "input.txt";
+		this.outputFile = "output.txt";
+		this.searchString = "name=";
+		this.binaryLocation = "C:\\Program Files";
+		this.softwareName = "Tower";
+		this.softwareConfigFile = "poet.cfg";
+	}
 
-    public static void main(String[] args) {
-        ScannerApp app = new ScannerApp();
-        app.checkCmdArgs(args);
-        app.processFile();
-    }
+	public static void main(String[] args) {
+		ScannerApp app = new ScannerApp();
+		app.checkCmdArgs(args);
+		app.processFile();
+	}
 
-    public void processFile() {
-        System.out.print("Processing");
-        try {
-            List<String> hostsResult = new ArrayList<>();
-            List<String> hosts = Files.readAllLines(Paths.get(inputFile));
-            hosts.forEach(host -> {
-                StringBuilder response = new StringBuilder();
-                try {
-                    InetAddress ip = InetAddress.getByName(host);
-                    // Timeout period is 5 seconds
-                    if (!ip.isReachable(5 * 1000)) {
-                        response.append("PING NOT FOUND");
-                    } else {
-                        if (Files.exists(Paths.get(URI.create("file:///tmp/scanner")))) {
-                            Files.readAllLines(
-                                    Paths.get(URI.create("file:///tmp/scanner/data.txt")))
-                                    .forEach(line ->
-                            {
-                                        if (line.contains(searchString)) {
-                                            response.append(line.substring(searchString.length()
-                                                    + searchString.indexOf(0) + 1));
-                                        }
-                                    });
-                        } else {
-                            response.append("SOFTWARE NOT FOUND");
-                        }
-                    }
-                } catch (UnknownHostException e) {
-                    response.append("PING NOT FOUND");
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                hostsResult.add(String.format("%-15s %-15s", host, response));
-                System.out.print("..");
-            });
+	public void processFile() {
+		System.out.print("Processing");
+		try {
+			List<String> hostsResult = new ArrayList<>();
+			List<String> hosts = Files.readAllLines(Paths.get(inputFile));
+			hosts.forEach(host -> {
+				StringBuilder response = new StringBuilder();
+				try {
+					InetAddress ip = InetAddress.getByName(host);
+					// Timeout period is 5 seconds
+					if (!ip.isReachable(5 * 1000)) {
+						response.append("PING NOT FOUND");
+					} else {
+						if (Files.exists(Paths.get(URI.create("file://" + binaryLocation)))) {
+							Files.readAllLines(Paths.get(URI.create(
+									"file://" + binaryLocation + "/" + softwareName + "/" + softwareConfigFile)))
+									.forEach(line -> {
+										if (line.contains(searchString)) {
+											response.append(line
+													.substring(searchString.length() + searchString.indexOf(0) + 1));
+										}
+									});
+						} else {
+							response.append("SOFTWARE NOT FOUND");
+						}
+					}
+				} catch (UnknownHostException e) {
+					response.append("PING NOT FOUND");
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				hostsResult.add(String.format("%-15s %-15s", host, response));
+				System.out.print("..");
+			});
 
-            Files.write(Paths.get(outputFile), hostsResult, StandardOpenOption.CREATE,
-                    StandardOpenOption.WRITE);
+			Files.write(Paths.get(outputFile), hostsResult, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
 
-            System.out.println("\n");
-            hostsResult.forEach(System.out::println);
-            System.out.println("\nProcessing completed");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+			System.out.println("\n");
+			hostsResult.forEach(System.out::println);
+			System.out.println("\nProcessing completed");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
-    public void checkCmdArgs(String[] args) {
-        if (args.length == 0) return;
-        if (args.length != 0 && args.length % 2 != 0) {
-            printUsage();
-            System.exit(1);
-        }
-        int len = args.length;
-        while (len > 0) {
-            int value = --len;
-            int option = --len;
-            if ("--file".equals(args[option])) inputFile = args[value];
-            if ("--output".equals(args[option])) outputFile = args[value];
-            if ("--search".equals(args[option])) searchString = args[value];
-        }
-    }
+	public void checkCmdArgs(String[] args) {
+		if (args.length == 0)
+			return;
+		if (args.length != 0 && args.length % 2 != 0) {
+			printUsage();
+			System.exit(1);
+		}
+		int len = args.length;
+		while (len > 0) {
+			int value = --len;
+			int option = --len;
+			if ("--file".equals(args[option]))
+				inputFile = args[value];
+			if ("--output".equals(args[option]))
+				outputFile = args[value];
+			if ("--search".equals(args[option]))
+				searchString = args[value];
+			if ("--binaryLocation".equals(args[option]))
+				searchString = args[value];
+			if ("--software".equals(args[option]))
+				searchString = args[value];
+			if ("--softwareConfigFile".equals(args[option]))
+				searchString = args[value];
+		}
+	}
 
-    private void printUsage() {
-        System.out.println("Usage: \tScannerApp --file C:\\Temp\\input.txt\n"
-                + "\tScannerApp --file C:\\Temp\\input.txt " + "--output C:\\Temp\\output.txt "
-                + "--search searchToken");
-    }
+	private void printUsage() {
+		System.out.println("Usage: \tScannerApp\n" + "\tScannerApp --file C:\\Temp\\input.txt\n"
+				+ "\tScannerApp --file C:\\Temp\\input.txt " + "--output C:\\Temp\\output.txt "
+				+ "--search searchToken  --binaryLocation C:\\Program Files --software VLC --softwareConfigFile settings.ini");
+	}
 
 }
